@@ -19,6 +19,8 @@
     --purpleSoft:#f1eafe;
     --shadow:0 8px 24px rgba(17,24,39,.08);
     --radius:16px;
+    --good:#12b76a;
+    --bad:#ef4444;
   }
   *{box-sizing:border-box}
   body{
@@ -28,7 +30,6 @@
     color:var(--text);
   }
 
-  /* ===== Header like screenshot ===== */
   header{
     background:linear-gradient(90deg, #8b5cf6, #7c3aed);
     color:#fff;
@@ -81,7 +82,6 @@
     user-select:none;
   }
 
-  /* ===== Filters row ===== */
   .filtersbar{
     background:#fff;
     border-bottom:1px solid var(--line);
@@ -179,7 +179,6 @@
   }
   .btn:active{ transform:translateY(1px); }
 
-  /* ===== Multiselect dropdown (custom) ===== */
   .dropdown{ position:relative; }
   .menu{
     position:absolute;
@@ -207,10 +206,8 @@
   .menu .row .name{ font-weight:800; }
   .menu .row .hint{ font-size:12px; color:var(--muted); margin-left:auto; }
 
-  /* ===== Page layout ===== */
   .container{ max-width:1200px; margin:0 auto; padding:18px 16px 26px; }
 
-  /* Tabs like screenshot */
   .tabs{
     display:flex; gap:22px;
     align-items:flex-end;
@@ -225,9 +222,7 @@
     position:relative;
     user-select:none;
   }
-  .tab.active{
-    color:#111827;
-  }
+  .tab.active{ color:#111827; }
   .tab.active:after{
     content:"";
     position:absolute;
@@ -237,7 +232,6 @@
     background:var(--purple);
   }
 
-  /* KPI: 2 rows, 3 per row */
   .kpi-grid{
     display:grid;
     grid-template-columns:repeat(3, minmax(0, 1fr));
@@ -260,17 +254,14 @@
   .kpi{
     padding:14px 16px;
     min-height:84px;
-    display:flex; flex-direction:column; gap:8px;
+    display:flex; flex-direction:column; gap:10px;
   }
-  .kpi .klabel{ font-size:12px; color:var(--muted); font-weight:800; }
-  .kpi .kvalue{ font-size:22px; font-weight:950; letter-spacing:.2px; }
-  .kpi .kdelta{ font-size:12px; font-weight:900; color:#12b76a; }
-  .kpi .kdelta.neg{ color:#ef4444; }
+  .kpi .klabel{ font-size:12px; color:var(--muted); font-weight:900; line-height:1.25; }
+  .kpi .kvalue{ font-size:34px; font-weight:950; letter-spacing:.2px; }
+  .kpi .kdelta{ font-size:14px; font-weight:950; color:var(--good); }
+  .kpi .kdelta.neg{ color:var(--bad); }
 
-  /* Swimlane section */
-  .lane{
-    margin-top:12px;
-  }
+  .lane{ margin-top:12px; }
   .lane-title{
     margin:14px 0 12px;
     background:var(--purpleSoft);
@@ -283,7 +274,6 @@
     letter-spacing:.2px;
   }
 
-  /* Linear charts (one column) */
   .chart-card{ padding:14px 14px 12px; }
   .chart-title{
     font-weight:950;
@@ -295,11 +285,10 @@
     margin:0 0 10px;
     font-size:12px;
     color:var(--muted);
-    font-weight:700;
+    font-weight:800;
   }
-  canvas{ width:100% !important; height:280px !important; }
+  canvas{ width:100% !important; height:300px !important; }
 
-  /* Table view */
   .table-wrap{ overflow:auto; border-radius:var(--radius); }
   table{ width:100%; border-collapse:separate; border-spacing:0; min-width:1150px; }
   thead th{
@@ -377,7 +366,6 @@
 
 <div class="filtersbar">
   <div class="filters">
-    <!-- Warehouse multiselect (styled like screenshot) -->
     <div class="fgroup dropdown" style="min-width:340px;">
       <div class="flabel">Склад (выбрано: <span id="whCount">0</span>) *</div>
       <div class="control" id="whControl" style="cursor:pointer;">
@@ -392,7 +380,6 @@
       <div class="menu" id="whMenu"></div>
     </div>
 
-    <!-- Date range (styled) -->
     <div class="fgroup" style="min-width:420px; flex:1 1 auto;">
       <div class="flabel">Период *</div>
       <div class="daterange">
@@ -415,79 +402,44 @@
 </div>
 
 <div class="container">
-  <!-- Tabs -->
   <div class="tabs">
     <div class="tab active" data-tab="charts">Графики</div>
     <div class="tab" data-tab="table">Таблица</div>
   </div>
 
-  <!-- KPI (2 rows x 3) -->
   <div class="kpi-grid" id="kpiGrid"></div>
 
-  <!-- CHARTS (linear + swimlanes) -->
   <div id="chartsView">
     <div class="lane">
       <div class="lane-title">Сводная по всем складам</div>
 
-      <!-- Linear report: each chart full width (no 2-col layouts) -->
+      <!-- Combined chart 1+2 -->
       <div class="card chart-card">
-        <div class="chart-title">1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)</div>
-        <div class="chart-sub">Агрегация по дням, взвешивание по кол-ву заказов</div>
-        <canvas id="c_speed"></canvas>
+        <div class="chart-title">1–2. Скорость отгрузки + касания на товар</div>
+        <div class="chart-sub">Две линии (легенда кликабельна: скрывает/показывает серию)</div>
+        <canvas id="c_comb_12"></canvas>
       </div>
 
       <div style="height:12px"></div>
 
+      <!-- Combined chart 3.1 + 3.2 + 4 -->
       <div class="card chart-card">
-        <div class="chart-title">2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт</div>
-        <div class="chart-sub">Агрегация по дням, взвешивание по кол-ву товаров</div>
-        <canvas id="c_touches"></canvas>
+        <div class="chart-title">3–4. % перехвата (от заказов / от товаров) + абсолют перехваченных заказов</div>
+        <div class="chart-sub">Три серии (легенда кликабельна: скрывает/показывает серию)</div>
+        <canvas id="c_comb_3_4"></canvas>
       </div>
 
       <div style="height:12px"></div>
 
+      <!-- Combined chart 5 + Context -->
       <div class="card chart-card">
-        <div class="chart-title">3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада</div>
-        <div class="chart-sub">Показывает долю перехвата от заказов (company view)</div>
-        <canvas id="c_intRateOrders"></canvas>
+        <div class="chart-title">5. % ошибочных перемещений + поток товаров на приемке (шт)</div>
+        <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
+        <canvas id="c_comb_5_units"></canvas>
       </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card chart-card">
-        <div class="chart-title">3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада</div>
-        <div class="chart-sub">Показывает долю перехвата от товаров (company view)</div>
-        <canvas id="c_intRateUnits"></canvas>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card chart-card">
-        <div class="chart-title">4. абсолютное кол-во перехваченных заказов в рамках складов / компании</div>
-        <div class="chart-sub">Абсолютный перехват (заказы)</div>
-        <canvas id="c_intAbs"></canvas>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card chart-card">
-        <div class="chart-title">5. % ошибочных перемещений в тару сортировки</div>
-        <div class="chart-sub">Взвешено по объему товаров</div>
-        <canvas id="c_sortErr"></canvas>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card chart-card">
-        <div class="chart-title">Операционный контекст: поток товаров на приемке (шт)</div>
-        <div class="chart-sub">Объем входящего потока влияет на все метрики выше</div>
-        <canvas id="c_units"></canvas>
-      </div>
-
     </div>
   </div>
 
-  <!-- TABLE -->
   <div id="tableView" style="display:none;">
     <div class="card" style="padding:14px;">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
@@ -517,9 +469,6 @@
 </div>
 
 <script>
-/* =========================
-   Mock data generator (локально)
-   ========================= */
 const WAREHOUSES = [
   "DE-Berlin-01",
   "DE-Leipzig-02",
@@ -535,7 +484,8 @@ const state = {
   mode: "warehouse",
   sort: { key: null, dir: "desc" },
   charts: {},
-  selectedWarehouses: new Set()
+  selectedWarehouses: new Set(),
+  kpiDeltaPct: {} // per KPI label: positive small deltas 5%..30%
 };
 
 function rand(min, max){ return Math.random()*(max-min)+min; }
@@ -554,7 +504,6 @@ function dateKey(d){
 function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
 
 function prettyRuDate(iso){
-  // iso: YYYY-MM-DD -> "18 февраля 2026 г."
   const d = new Date(iso + "T00:00:00");
   const months = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
   return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} г.`;
@@ -573,16 +522,14 @@ function getDateRange(){
 }
 function updateRangeLabel(){
   const {from,to} = getDateRange();
-  const label = `${prettyRuDate(from)} — ${prettyRuDate(to)}`;
-  document.getElementById("rangeLabel").textContent = label;
+  document.getElementById("rangeLabel").textContent = `${prettyRuDate(from)} — ${prettyRuDate(to)}`;
 }
 
-/* ===== Custom multiselect (styled) ===== */
+/* ===== Custom multiselect ===== */
 function buildWarehouseMenu(){
   const menu = document.getElementById("whMenu");
   menu.innerHTML = "";
 
-  // helper row builder
   const mkRow = (name, checked, hint, onToggle)=>{
     const row = document.createElement("div");
     row.className = "row";
@@ -593,7 +540,6 @@ function buildWarehouseMenu(){
     `;
     const cb = row.querySelector("input");
     row.addEventListener("click", (e)=>{
-      // allow clicking anywhere
       if(e.target.tagName !== "INPUT") cb.checked = !cb.checked;
       onToggle(cb.checked);
       e.stopPropagation();
@@ -602,26 +548,19 @@ function buildWarehouseMenu(){
     return row;
   };
 
-  // Select all
   const allChecked = state.selectedWarehouses.size === WAREHOUSES.length;
   menu.appendChild(mkRow("Выбрать все", allChecked, "", (isOn)=>{
-    if(isOn){
-      state.selectedWarehouses = new Set(WAREHOUSES);
-    } else {
-      state.selectedWarehouses = new Set();
-    }
+    state.selectedWarehouses = isOn ? new Set(WAREHOUSES) : new Set();
     buildWarehouseMenu();
     updateWarehouseControl();
   }));
 
-  // Divider
   const hr = document.createElement("div");
   hr.style.height="1px";
   hr.style.background="var(--line)";
   hr.style.margin="8px 0";
   menu.appendChild(hr);
 
-  // Warehouses
   WAREHOUSES.forEach(w=>{
     const checked = state.selectedWarehouses.has(w);
     menu.appendChild(mkRow(w, checked, "", (isOn)=>{
@@ -636,15 +575,10 @@ function buildWarehouseMenu(){
 function updateWarehouseControl(){
   const cnt = state.selectedWarehouses.size;
   document.getElementById("whCount").textContent = cnt;
-
   const main = document.getElementById("whMain");
-  if(cnt === 0){
-    main.textContent = "Не выбрано";
-  } else if(cnt === WAREHOUSES.length){
-    main.textContent = "Выбраны все";
-  } else {
-    main.textContent = `Выбрано: ${cnt}`;
-  }
+  if(cnt === 0) main.textContent = "Не выбрано";
+  else if(cnt === WAREHOUSES.length) main.textContent = "Выбраны все";
+  else main.textContent = `Выбрано: ${cnt}`;
 }
 
 function toggleWarehouseMenu(force){
@@ -653,9 +587,7 @@ function toggleWarehouseMenu(force){
   menu.classList.toggle("open", open);
 }
 
-/* =========================
-   Mock rows
-   ========================= */
+/* ===== Data ===== */
 function generateMockRows(){
   const {from, to} = getDateRange();
   const start = new Date(from);
@@ -683,7 +615,7 @@ function generateMockRows(){
       const interceptRateUnits = clamp(interceptRateOrders * rand(0.85, 1.20), 0.01, 0.14);
 
       const dayIndex = Math.round((d - start)/(24*3600*1000));
-      const trend = -0.015 * dayIndex; // улучшение
+      const trend = -0.015 * dayIndex;
       const speedHours = clamp(rand(15.5, 26.5) + trend + (whFactor-1)*1.2, 10.5, 34);
 
       const touches = clamp(rand(2.2, 4.1) + (whFactor-1)*0.25 + trend*0.3, 1.6, 5.2);
@@ -747,67 +679,53 @@ function agg(rows){
   return { orders, units, interceptAbs, interceptRateOrders, interceptRateUnits, speedHours, touchesPerUnit, sortErrRate };
 }
 
-/* =========================
-   KPI render (2 rows x 3)
-   ========================= */
+/* ===== KPI deltas: positive 5%..30% and green ===== */
+function ensureKpiDeltas(){
+  // stable per page load unless "regen" triggered
+  const keys = [
+    "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)",
+    "2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт",
+    "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада",
+    "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада",
+    "4. абсолютное кол-во перехваченных заказов в рамках складов / компании",
+    "5. % ошибочных перемещений в тару сортировки"
+  ];
+  keys.forEach(k=>{
+    if(state.kpiDeltaPct[k] == null){
+      state.kpiDeltaPct[k] = rand(0.05, 0.30); // 5%..30%
+    }
+  });
+}
+
 function buildKpis(){
+  ensureKpiDeltas();
   const kpiGrid = document.getElementById("kpiGrid");
   const cur = agg(state.filtered);
-
-  // compare with previous equal-length window (for deltas)
-  const {from, to} = getDateRange();
-  const start = new Date(from), end = new Date(to);
-  const days = Math.round((end - start)/(24*3600*1000)) + 1;
-  const prevTo = addDays(start, -1);
-  const prevFrom = addDays(prevTo, -(days-1));
-
-  const prev = state.raw.filter(r =>
-    r.date >= dateKey(prevFrom) && r.date <= dateKey(prevTo) &&
-    state.selectedWarehouses.has(r.warehouse)
-  );
-  const prevAgg = agg(prev);
-
-  function deltaPct(curr, prev){
-    if(!isFinite(prev) || prev===0) return 0;
-    return (curr - prev) / prev;
-  }
 
   const cards = [
     {
       label: "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)",
-      value: fmtHours(cur.speedHours),
-      delta: deltaPct(cur.speedHours, prevAgg.speedHours),
-      goodIfDown: true
+      value: fmtHours(cur.speedHours)
     },
     {
       label: "2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт",
-      value: fmt1(cur.touchesPerUnit),
-      delta: deltaPct(cur.touchesPerUnit, prevAgg.touchesPerUnit),
-      goodIfDown: true
+      value: fmt1(cur.touchesPerUnit)
     },
     {
       label: "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада",
-      value: fmtPct(cur.interceptRateOrders),
-      delta: deltaPct(cur.interceptRateOrders, prevAgg.interceptRateOrders),
-      goodIfDown: false
+      value: fmtPct(cur.interceptRateOrders)
     },
     {
       label: "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада",
-      value: fmtPct(cur.interceptRateUnits),
-      delta: deltaPct(cur.interceptRateUnits, prevAgg.interceptRateUnits),
-      goodIfDown: false
+      value: fmtPct(cur.interceptRateUnits)
     },
     {
       label: "4. абсолютное кол-во перехваченных заказов в рамках складов / компании",
-      value: fmtNum(cur.interceptAbs),
-      delta: deltaPct(cur.interceptAbs, prevAgg.interceptAbs),
-      goodIfDown: false
+      value: fmtNum(cur.interceptAbs)
     },
     {
       label: "5. % ошибочных перемещений в тару сортировки",
-      value: fmtPct(cur.sortErrRate),
-      delta: deltaPct(cur.sortErrRate, prevAgg.sortErrRate),
-      goodIfDown: true
+      value: fmtPct(cur.sortErrRate)
     }
   ];
 
@@ -815,22 +733,17 @@ function buildKpis(){
   cards.forEach(c=>{
     const d = document.createElement("div");
     d.className = "card kpi";
-    const delta = c.delta;
-    const isImprovement = c.goodIfDown ? (delta<0) : (delta>0);
-    const deltaClass = isImprovement ? "kdelta" : "kdelta neg";
-    const sign = delta>=0 ? "+" : "";
+    const delta = state.kpiDeltaPct[c.label] ?? 0.12;
     d.innerHTML = `
       <div class="klabel">${c.label}</div>
       <div class="kvalue">${c.value}</div>
-      <div class="${deltaClass}">${sign}${(delta*100).toFixed(1)}% к предыдущему периоду</div>
+      <div class="kdelta">+${(delta*100).toFixed(1)}% к предыдущему периоду</div>
     `;
     kpiGrid.appendChild(d);
   });
 }
 
-/* =========================
-   Charts
-   ========================= */
+/* ===== Charts ===== */
 function destroyChart(id){
   if(state.charts[id]){
     state.charts[id].destroy();
@@ -855,63 +768,163 @@ function buildCharts(){
     };
   });
 
-  const common = {
+  const baseOptions = {
     responsive:true,
     maintainAspectRatio:false,
-    plugins:{ legend:{ display:true, labels:{ boxWidth:18, boxHeight:10 } } },
+    interaction:{ mode:"index", intersect:false },
+    plugins:{
+      legend:{
+        display:true,
+        labels:{ boxWidth:18, boxHeight:10, font:{ weight:"700" } }
+        // Default Chart.js behavior: click legend -> toggle dataset visibility ✅
+      },
+      tooltip:{ enabled:true }
+    },
     scales:{
-      x:{ ticks:{ maxRotation:45, minRotation:45 } },
-      y:{ beginAtZero:false }
+      x:{ ticks:{ maxRotation:45, minRotation:45 } }
     }
   };
 
-  const mkLine = (canvasId, label, data, isPercent=false)=>{
-    destroyChart(canvasId);
-    state.charts[canvasId] = new Chart(document.getElementById(canvasId), {
-      type:"line",
-      data:{
-        labels,
-        datasets:[{
-          label,
-          data,
+  // helper: deterministic colors per dataset (different)
+  const COLORS = ["#2563eb","#7c3aed","#10b981","#f59e0b","#ef4444","#06b6d4"];
+
+  // Chart A: 1+2 (two lines, dual axes for readability)
+  destroyChart("c_comb_12");
+  state.charts["c_comb_12"] = new Chart(document.getElementById("c_comb_12"), {
+    type:"line",
+    data:{
+      labels,
+      datasets:[
+        {
+          label:"1. Время, часы",
+          data: series.map(s=>+s.speed.toFixed(2)),
+          borderColor: COLORS[0],
+          backgroundColor: COLORS[0],
           tension:0.25,
-          fill:false,
-          pointRadius:2.4
-        }]
-      },
-      options:{
-        ...common,
-        scales:{
-          ...common.scales,
-          y:{
-            ticks:{ callback:(v)=> isPercent ? (v*100).toFixed(0)+"%" : v }
-          }
+          pointRadius:2.2,
+          yAxisID:"y"
+        },
+        {
+          label:"2. Касания на товар",
+          data: series.map(s=>+s.touches.toFixed(2)),
+          borderColor: COLORS[1],
+          backgroundColor: COLORS[1],
+          tension:0.25,
+          pointRadius:2.2,
+          yAxisID:"y1"
+        }
+      ]
+    },
+    options:{
+      ...baseOptions,
+      scales:{
+        x: baseOptions.scales.x,
+        y:{ position:"left", title:{ display:true, text:"Часы" } },
+        y1:{ position:"right", grid:{ drawOnChartArea:false }, title:{ display:true, text:"Касания" } }
+      }
+    }
+  });
+
+  // Chart B: 3.1 + 3.2 + 4 (rates + abs) -> dual axes
+  destroyChart("c_comb_3_4");
+  state.charts["c_comb_3_4"] = new Chart(document.getElementById("c_comb_3_4"), {
+    data:{
+      labels,
+      datasets:[
+        {
+          type:"line",
+          label:"3.1 Доля от заказов",
+          data: series.map(s=>+s.intRateOrders.toFixed(4)),
+          borderColor: COLORS[2],
+          backgroundColor: COLORS[2],
+          tension:0.25,
+          pointRadius:2.2,
+          yAxisID:"y"
+        },
+        {
+          type:"line",
+          label:"3.2 Доля от товаров",
+          data: series.map(s=>+s.intRateUnits.toFixed(4)),
+          borderColor: COLORS[3],
+          backgroundColor: COLORS[3],
+          tension:0.25,
+          pointRadius:2.2,
+          yAxisID:"y"
+        },
+        {
+          type:"bar",
+          label:"4. Перехвачено, заказов",
+          data: series.map(s=>s.intAbs),
+          borderColor: COLORS[0],
+          backgroundColor: "rgba(37, 99, 235, 0.18)",
+          yAxisID:"y1"
+        }
+      ]
+    },
+    options:{
+      ...baseOptions,
+      scales:{
+        x: baseOptions.scales.x,
+        y:{
+          position:"left",
+          ticks:{ callback:(v)=> (v*100).toFixed(0)+"%" },
+          title:{ display:true, text:"%" }
+        },
+        y1:{
+          position:"right",
+          grid:{ drawOnChartArea:false },
+          title:{ display:true, text:"Заказы" }
         }
       }
-    });
-  };
+    }
+  });
 
-  const mkBar = (canvasId, label, data)=>{
-    destroyChart(canvasId);
-    state.charts[canvasId] = new Chart(document.getElementById(canvasId), {
-      type:"bar",
-      data:{ labels, datasets:[{ label, data }] },
-      options:{ ...common }
-    });
-  };
-
-  mkLine("c_speed", "Время, часы", series.map(s=>+s.speed.toFixed(2)), false);
-  mkLine("c_touches", "Касания на товар", series.map(s=>+s.touches.toFixed(2)), false);
-  mkLine("c_intRateOrders", "Доля от заказов", series.map(s=>+s.intRateOrders.toFixed(4)), true);
-  mkLine("c_intRateUnits", "Доля от товаров", series.map(s=>+s.intRateUnits.toFixed(4)), true);
-  mkBar("c_intAbs", "Перехвачено, заказов", series.map(s=>s.intAbs));
-  mkLine("c_sortErr", "Ошибки перемещений", series.map(s=>+s.sortErr.toFixed(4)), true);
-  mkBar("c_units", "Товаров на приемке, шт", series.map(s=>s.units));
+  // Chart C: 5 + Units (rate + volume) -> dual axes
+  destroyChart("c_comb_5_units");
+  state.charts["c_comb_5_units"] = new Chart(document.getElementById("c_comb_5_units"), {
+    data:{
+      labels,
+      datasets:[
+        {
+          type:"line",
+          label:"5. Ошибки перемещений",
+          data: series.map(s=>+s.sortErr.toFixed(4)),
+          borderColor: COLORS[4],
+          backgroundColor: COLORS[4],
+          tension:0.25,
+          pointRadius:2.2,
+          yAxisID:"y"
+        },
+        {
+          type:"bar",
+          label:"Поток товаров на приемке, шт",
+          data: series.map(s=>s.units),
+          borderColor: COLORS[5],
+          backgroundColor: "rgba(6, 182, 212, 0.20)",
+          yAxisID:"y1"
+        }
+      ]
+    },
+    options:{
+      ...baseOptions,
+      scales:{
+        x: baseOptions.scales.x,
+        y:{
+          position:"left",
+          ticks:{ callback:(v)=> (v*100).toFixed(0)+"%" },
+          title:{ display:true, text:"%" }
+        },
+        y1:{
+          position:"right",
+          grid:{ drawOnChartArea:false },
+          title:{ display:true, text:"Шт" }
+        }
+      }
+    }
+  });
 }
 
-/* =========================
-   Table
-   ========================= */
+/* ===== Table ===== */
 function buildTable(){
   const table = document.getElementById("dataTable");
   const thead = table.querySelector("thead");
@@ -955,7 +968,6 @@ function buildTable(){
     });
   }
 
-  // search
   const q = (document.getElementById("tableSearch").value||"").trim().toLowerCase();
   if(q){
     rows = rows.filter(r => Object.values(r).some(v=>String(v).toLowerCase().includes(q)));
@@ -974,7 +986,6 @@ function buildTable(){
     "5. % ошибочных перемещений в тару сортировки"
   ];
 
-  // sort
   if(state.sort.key){
     const k = state.sort.key;
     const dir = state.sort.dir==="asc" ? 1 : -1;
@@ -993,15 +1004,11 @@ function buildTable(){
       const isNum = typeof v === "number";
       let out = v;
 
-      if(c.startsWith("3. %") || c.startsWith("5. %")){
-        out = fmtPct(v);
-      } else if(c.startsWith("1. ")){
-        out = fmtHours(v);
-      } else if(c.startsWith("2. ")){
-        out = fmt1(v);
-      } else if(isNum){
-        out = fmtNum(Math.round(v));
-      }
+      if(c.startsWith("3. %") || c.startsWith("5. %")) out = fmtPct(v);
+      else if(c.startsWith("1. ")) out = fmtHours(v);
+      else if(c.startsWith("2. ")) out = fmt1(v);
+      else if(isNum) out = fmtNum(Math.round(v));
+
       return `<td class="${isNum ? "right" : ""}">${out}</td>`;
     }).join("") + "</tr>";
   }).join("");
@@ -1028,7 +1035,6 @@ function buildTable(){
     return `<td class="${typeof v === "number" ? "right" : ""}">${out}</td>`;
   }).join("") + "</tr>";
 
-  // click sorting
   thead.querySelectorAll("th").forEach(th=>{
     th.onclick = ()=>{
       const col = th.dataset.col;
@@ -1043,9 +1049,7 @@ function buildTable(){
   });
 }
 
-/* =========================
-   UI wiring
-   ========================= */
+/* ===== UI ===== */
 function setTab(tab){
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===tab));
   document.getElementById("chartsView").style.display = (tab==="charts") ? "block" : "none";
@@ -1060,7 +1064,10 @@ function setMode(mode){
 function refreshAll(regen=false){
   updateRangeLabel();
   if(regen){
+    // regenerate data and refresh KPI positive deltas (still 5..30%)
     state.raw = generateMockRows();
+    state.kpiDeltaPct = {};
+    ensureKpiDeltas();
   }
   applyFilters();
   buildKpis();
@@ -1068,59 +1075,45 @@ function refreshAll(regen=false){
   buildTable();
 }
 
-/* =========================
-   Init
-   ========================= */
+/* ===== Init ===== */
 (function init(){
-  // dates
   const {from,to} = defaultDateRange();
   document.getElementById("dateFrom").value = from;
   document.getElementById("dateTo").value = to;
 
-  // warehouses select all
   state.selectedWarehouses = new Set(WAREHOUSES);
   buildWarehouseMenu();
   updateWarehouseControl();
   updateRangeLabel();
 
-  // open/close dropdown
   document.getElementById("whControl").addEventListener("click", (e)=>{
-    // do not toggle if clicking clear
     if(e.target && e.target.id === "whClear") return;
     toggleWarehouseMenu();
   });
   document.getElementById("whClear").addEventListener("click", (e)=>{
     e.stopPropagation();
-    state.selectedWarehouses = new Set(WAREHOUSES); // reset to all like typical UX
+    state.selectedWarehouses = new Set(WAREHOUSES);
     buildWarehouseMenu();
     updateWarehouseControl();
     toggleWarehouseMenu(false);
     refreshAll(false);
   });
 
-  // close menu on outside click
-  document.addEventListener("click", ()=>{
-    toggleWarehouseMenu(false);
-  });
+  document.addEventListener("click", ()=> toggleWarehouseMenu(false));
   document.getElementById("whMenu").addEventListener("click",(e)=> e.stopPropagation());
 
-  // tabs
   document.querySelectorAll(".tab").forEach(t=>{
     t.addEventListener("click", ()=> setTab(t.dataset.tab));
   });
 
-  // table mode
   document.querySelectorAll(".pill").forEach(p=>{
     p.addEventListener("click", ()=> setMode(p.dataset.mode));
   });
 
-  // search
   document.getElementById("tableSearch").addEventListener("input", ()=> buildTable());
-
-  // refresh button
   document.getElementById("refreshBtn").addEventListener("click", ()=> refreshAll(true));
 
-  // data
+  // initial data
   state.raw = generateMockRows();
   refreshAll(false);
 })();
