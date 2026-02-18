@@ -3,94 +3,254 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Отчет — Перехват заказов на приемке</title>
+<title>Перехват заказов на приемке</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
   :root{
-    --bg:#f5f6fb;
+    --bg:#f6f7fb;
     --card:#ffffff;
-    --text:#101828;
-    --muted:#667085;
-    --line:#eaecf0;
-    --shadow:0 6px 20px rgba(16,24,40,.08);
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --purple:#7c3aed;
+    --purple2:#8b5cf6;
+    --purpleSoft:#f1eafe;
+    --shadow:0 8px 24px rgba(17,24,39,.08);
     --radius:16px;
   }
-  *{ box-sizing:border-box; }
-  body{ margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); }
-  header{
-    background:linear-gradient(90deg,#5a3cff,#8c6cff);
-    color:#fff;
-    padding:18px 18px 16px;
-    box-shadow:0 6px 20px rgba(0,0,0,.18);
-    position:sticky; top:0; z-index:20;
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
   }
-  .header-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; }
-  .title-wrap{ display:flex; flex-direction:column; gap:6px; }
-  h1{ margin:0; font-size:18px; font-weight:700; letter-spacing:.2px; }
-  .subtitle{ font-size:12px; opacity:.9; }
 
-  .filters{
-    display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;
-    background:rgba(255,255,255,.12);
-    padding:10px; border-radius:14px;
-    border:1px solid rgba(255,255,255,.18);
-  }
-  .filter{ display:flex; flex-direction:column; gap:6px; }
-  label{ font-size:11px; opacity:.95; }
-  select,input{
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,.25);
-    background:rgba(255,255,255,.16);
+  /* ===== Header like screenshot ===== */
+  header{
+    background:linear-gradient(90deg, #8b5cf6, #7c3aed);
     color:#fff;
-    padding:8px 10px;
-    outline:none;
-    min-width:160px;
+    position:sticky; top:0; z-index:50;
+    box-shadow:0 10px 24px rgba(0,0,0,.18);
   }
-  input[type="date"]{ min-width:145px; }
-  select option{ color:#111; }
-  .btn{
-    padding:9px 12px;
-    border:none;
-    border-radius:10px;
+  .topbar{
+    max-width:1200px;
+    margin:0 auto;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .brand{
+    width:34px;height:34px;border-radius:999px;
+    background:rgba(255,255,255,.95);
+    color:var(--purple);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;
+    box-shadow:0 6px 14px rgba(0,0,0,.18);
+    flex:0 0 auto;
+  }
+  .title{
+    font-weight:900;
+    font-size:18px;
+    letter-spacing:.2px;
+    text-align:center;
+    flex:1 1 auto;
+  }
+  .right-icons{
+    display:flex;gap:10px;align-items:center;flex:0 0 auto;
+    opacity:.95;
+  }
+  .badge{
+    font-size:12px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.35);
+    background:rgba(255,255,255,.14);
+    user-select:none;
+  }
+  .icon{
+    width:34px;height:34px;border-radius:999px;
+    border:1px solid rgba(255,255,255,.35);
+    background:rgba(255,255,255,.14);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;
+    user-select:none;
+  }
+
+  /* ===== Filters row ===== */
+  .filtersbar{
     background:#fff;
-    color:#4b2cff;
+    border-bottom:1px solid var(--line);
+  }
+  .filters{
+    max-width:1200px;
+    margin:0 auto;
+    padding:14px 16px;
+    display:flex;
+    gap:14px;
+    align-items:flex-end;
+    flex-wrap:wrap;
+  }
+  .fgroup{ display:flex; flex-direction:column; gap:6px; }
+  .flabel{
+    font-size:12px;
+    color:var(--muted);
     font-weight:700;
+  }
+  .control{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px 12px;
+    box-shadow:0 2px 10px rgba(17,24,39,.04);
+    min-height:44px;
+  }
+  .control .main{
+    font-weight:800;
+    color:#111827;
+    white-space:nowrap;
+  }
+  .control .sub{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:2px;
+    white-space:nowrap;
+  }
+  .control-col{ display:flex; flex-direction:column; line-height:1.1; }
+  .control .caret{
+    margin-left:8px;
+    width:22px;height:22px;border-radius:999px;
+    display:flex;align-items:center;justify-content:center;
+    background:#f3f4f6;
+    color:#111827;
+    font-size:12px;
+    flex:0 0 auto;
+  }
+  .control .clear{
+    width:22px;height:22px;border-radius:999px;
+    display:flex;align-items:center;justify-content:center;
+    background:#f3f4f6;
+    color:#6b7280;
     cursor:pointer;
-    box-shadow:0 8px 18px rgba(0,0,0,.18);
-    height:36px;
+    flex:0 0 auto;
+  }
+  .control input[type="date"]{
+    border:none;
+    outline:none;
+    font-weight:800;
+    color:#111827;
+    background:transparent;
+  }
+  .daterange{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  }
+  .range-pill{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#fff;
+    box-shadow:0 2px 10px rgba(17,24,39,.04);
+    min-height:44px;
+  }
+  .range-pill .range-title{
+    display:flex; flex-direction:column; line-height:1.1;
+  }
+  .range-pill .range-title .main{ font-weight:900; }
+  .range-pill .range-title .sub{ font-size:12px; color:var(--muted); margin-top:2px;}
+  .btn{
+    margin-left:auto;
+    background:linear-gradient(90deg,#7c3aed,#8b5cf6);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:12px 18px;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 14px 28px rgba(124,58,237,.28);
+    min-height:44px;
   }
   .btn:active{ transform:translateY(1px); }
 
-  .container{ padding:18px; max-width:1320px; margin:0 auto; }
-
-  .tabs{ display:flex; gap:10px; margin:6px 0 14px; }
-  .tab{
-    padding:10px 14px;
-    border-radius:999px;
-    border:1px solid var(--line);
+  /* ===== Multiselect dropdown (custom) ===== */
+  .dropdown{ position:relative; }
+  .menu{
+    position:absolute;
+    top:52px; left:0;
+    width:320px;
+    max-height:320px;
+    overflow:auto;
     background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    display:none;
+    z-index:60;
+    padding:8px;
+  }
+  .menu.open{ display:block; }
+  .menu .row{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 10px;
+    border-radius:12px;
     cursor:pointer;
-    font-weight:700;
-    color:#344054;
-    box-shadow:0 2px 8px rgba(16,24,40,.05);
+  }
+  .menu .row:hover{ background:#fafafa; }
+  .menu input{ width:16px; height:16px; }
+  .menu .row .name{ font-weight:800; }
+  .menu .row .hint{ font-size:12px; color:var(--muted); margin-left:auto; }
+
+  /* ===== Page layout ===== */
+  .container{ max-width:1200px; margin:0 auto; padding:18px 16px 26px; }
+
+  /* Tabs like screenshot */
+  .tabs{
+    display:flex; gap:22px;
+    align-items:flex-end;
+    padding:10px 2px 0;
+    margin-bottom:10px;
+  }
+  .tab{
+    font-weight:900;
+    color:#6b7280;
+    cursor:pointer;
+    padding:10px 4px;
+    position:relative;
+    user-select:none;
   }
   .tab.active{
-    background:#f0ecff;
-    border-color:#d8ccff;
-    color:#4b2cff;
+    color:#111827;
+  }
+  .tab.active:after{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:3px;
+    border-radius:999px;
+    background:var(--purple);
   }
 
+  /* KPI: 2 rows, 3 per row */
   .kpi-grid{
     display:grid;
-    grid-template-columns:repeat(6, minmax(0,1fr));
-    gap:12px;
-    margin:6px 0 14px;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:14px;
+    margin:12px 0 14px;
   }
-  @media (max-width:1200px){ .kpi-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
-  @media (max-width:680px){ .kpi-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
-
+  @media (max-width:900px){
+    .kpi-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .btn{ margin-left:0; }
+  }
+  @media (max-width:560px){
+    .kpi-grid{ grid-template-columns:1fr; }
+  }
   .card{
     background:var(--card);
     border:1px solid var(--line);
@@ -98,176 +258,244 @@
     box-shadow:var(--shadow);
   }
   .kpi{
-    padding:12px 12px 10px;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    min-height:92px;
+    padding:14px 16px;
+    min-height:84px;
+    display:flex; flex-direction:column; gap:8px;
   }
-  .kpi .label{ font-size:11px; color:var(--muted); line-height:1.2; }
-  .kpi .value{ font-size:22px; font-weight:800; letter-spacing:.2px; }
-  .kpi .delta{ font-size:12px; color:#12b76a; font-weight:700; }
-  .kpi .delta.neg{ color:#f04438; }
+  .kpi .klabel{ font-size:12px; color:var(--muted); font-weight:800; }
+  .kpi .kvalue{ font-size:22px; font-weight:950; letter-spacing:.2px; }
+  .kpi .kdelta{ font-size:12px; font-weight:900; color:#12b76a; }
+  .kpi .kdelta.neg{ color:#ef4444; }
 
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(12, minmax(0,1fr));
-    gap:12px;
+  /* Swimlane section */
+  .lane{
+    margin-top:12px;
   }
-  .chart-card{ padding:12px; }
-  .chart-title{ font-weight:800; font-size:13px; color:#344054; margin:0 0 8px; }
-  .span-6{ grid-column:span 6; }
-  .span-4{ grid-column:span 4; }
-  .span-8{ grid-column:span 8; }
-  .span-12{ grid-column:span 12; }
-  @media (max-width:1100px){
-    .span-6,.span-4,.span-8{ grid-column:span 12; }
-  }
-  canvas{ width:100% !important; height:300px !important; }
-
-  .table-controls{
-    display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-    margin:10px 0;
-  }
-  .table-controls .pill{
-    padding:8px 12px;
-    border-radius:999px;
-    border:1px solid var(--line);
-    background:#fff;
-    cursor:pointer;
-    font-weight:800;
-    color:#344054;
-  }
-  .table-controls .pill.active{
-    background:#f0ecff;
-    border-color:#d8ccff;
-    color:#4b2cff;
-  }
-  .search{
-    margin-left:auto;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:10px 12px;
-    min-width:260px;
-    outline:none;
+  .lane-title{
+    margin:14px 0 12px;
+    background:var(--purpleSoft);
+    border:1px solid #e9ddff;
+    color:var(--purple);
+    font-weight:950;
+    border-radius:14px;
+    padding:12px 14px;
+    text-align:center;
+    letter-spacing:.2px;
   }
 
+  /* Linear charts (one column) */
+  .chart-card{ padding:14px 14px 12px; }
+  .chart-title{
+    font-weight:950;
+    font-size:14px;
+    margin:0 0 10px;
+    color:#374151;
+  }
+  .chart-sub{
+    margin:0 0 10px;
+    font-size:12px;
+    color:var(--muted);
+    font-weight:700;
+  }
+  canvas{ width:100% !important; height:280px !important; }
+
+  /* Table view */
   .table-wrap{ overflow:auto; border-radius:var(--radius); }
-  table{ width:100%; border-collapse:separate; border-spacing:0; min-width:1100px; }
+  table{ width:100%; border-collapse:separate; border-spacing:0; min-width:1150px; }
   thead th{
     position:sticky; top:0;
     background:#fff;
     z-index:5;
     font-size:12px;
-    color:#344054;
+    color:#374151;
     text-align:left;
     padding:12px;
     border-bottom:1px solid var(--line);
     cursor:pointer;
     white-space:nowrap;
+    font-weight:950;
   }
   tbody td{
     padding:12px;
     border-bottom:1px solid var(--line);
     font-size:12px;
-    color:#101828;
     white-space:nowrap;
   }
-  tbody tr:hover td{ background:#fafbff; }
+  tbody tr:hover td{ background:#fafafa; }
   tfoot td{
     padding:12px;
-    font-weight:900;
+    font-weight:950;
     border-top:2px solid var(--line);
     background:#fcfcff;
     position:sticky; bottom:0;
   }
-  .muted{ color:var(--muted); }
   .right{ text-align:right; }
+  .table-controls{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    margin:10px 0 12px;
+  }
+  .pill{
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#fff;
+    cursor:pointer;
+    font-weight:950;
+    color:#374151;
+  }
+  .pill.active{
+    background:var(--purpleSoft);
+    border-color:#e9ddff;
+    color:var(--purple);
+  }
+  .search{
+    margin-left:auto;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px 12px;
+    min-width:260px;
+    outline:none;
+    font-weight:800;
+  }
 </style>
 </head>
 
 <body>
 <header>
-  <div class="header-row">
-    <div class="title-wrap">
-      <h1>Перехват заказов на приемке</h1>
-      <div class="subtitle">Кликабельный BI-прототип: фильтры → KPI/графики/таблица пересчитываются локально</div>
-    </div>
-
-    <div class="filters">
-      <div class="filter">
-        <label>Склад (multiselect)</label>
-        <select id="whSelect" multiple size="3"></select>
-      </div>
-      <div class="filter">
-        <label>Период (date range)</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <input id="dateFrom" type="date">
-          <input id="dateTo" type="date">
-        </div>
-      </div>
-      <button class="btn" id="refreshBtn">Обновить</button>
+  <div class="topbar">
+    <div class="brand">wb</div>
+    <div class="title">Проблемные столы</div>
+    <div class="right-icons">
+      <div class="badge">v20.1.6</div>
+      <div class="icon">?</div>
+      <div class="icon">⎘</div>
+      <div class="icon">🔒</div>
     </div>
   </div>
 </header>
 
+<div class="filtersbar">
+  <div class="filters">
+    <!-- Warehouse multiselect (styled like screenshot) -->
+    <div class="fgroup dropdown" style="min-width:340px;">
+      <div class="flabel">Склад (выбрано: <span id="whCount">0</span>) *</div>
+      <div class="control" id="whControl" style="cursor:pointer;">
+        <div class="control-col">
+          <div class="main" id="whMain">Выбраны все</div>
+          <div class="sub">Мультивыбор</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="clear" id="whClear" title="Сброс">×</div>
+        <div class="caret">▾</div>
+      </div>
+      <div class="menu" id="whMenu"></div>
+    </div>
+
+    <!-- Date range (styled) -->
+    <div class="fgroup" style="min-width:420px; flex:1 1 auto;">
+      <div class="flabel">Период *</div>
+      <div class="daterange">
+        <div class="range-pill" style="flex:1 1 auto; min-width:320px;">
+          <div class="range-title" style="flex:1">
+            <div class="main" id="rangeLabel">—</div>
+            <div class="sub">Выберите диапазон дат</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <input id="dateFrom" type="date">
+            <div style="font-weight:900;color:#9ca3af;">—</div>
+            <input id="dateTo" type="date">
+          </div>
+        </div>
+
+        <button class="btn" id="refreshBtn">⟳&nbsp; Обновить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="container">
+  <!-- Tabs -->
   <div class="tabs">
     <div class="tab active" data-tab="charts">Графики</div>
     <div class="tab" data-tab="table">Таблица</div>
   </div>
 
-  <!-- KPI -->
+  <!-- KPI (2 rows x 3) -->
   <div class="kpi-grid" id="kpiGrid"></div>
 
-  <!-- CHARTS -->
+  <!-- CHARTS (linear + swimlanes) -->
   <div id="chartsView">
-    <div class="grid">
-      <div class="card chart-card span-6">
+    <div class="lane">
+      <div class="lane-title">Сводная по всем складам</div>
+
+      <!-- Linear report: each chart full width (no 2-col layouts) -->
+      <div class="card chart-card">
         <div class="chart-title">1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)</div>
+        <div class="chart-sub">Агрегация по дням, взвешивание по кол-ву заказов</div>
         <canvas id="c_speed"></canvas>
       </div>
 
-      <div class="card chart-card span-6">
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
         <div class="chart-title">2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт</div>
+        <div class="chart-sub">Агрегация по дням, взвешивание по кол-ву товаров</div>
         <canvas id="c_touches"></canvas>
       </div>
 
-      <div class="card chart-card span-4">
-        <div class="chart-title">3. % перехваченных заказов на приемке (от кол-ва заказов в рамках склада)</div>
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада</div>
+        <div class="chart-sub">Показывает долю перехвата от заказов (company view)</div>
         <canvas id="c_intRateOrders"></canvas>
       </div>
 
-      <div class="card chart-card span-4">
-        <div class="chart-title">3. % перехваченных заказов на приемке (от кол-ва товаров на приемке в рамках склада)</div>
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада</div>
+        <div class="chart-sub">Показывает долю перехвата от товаров (company view)</div>
         <canvas id="c_intRateUnits"></canvas>
       </div>
 
-      <div class="card chart-card span-4">
-        <div class="chart-title">5. % ошибочных перемещений в тару сортировки</div>
-        <canvas id="c_sortErr"></canvas>
-      </div>
+      <div style="height:12px"></div>
 
-      <div class="card chart-card span-8">
+      <div class="card chart-card">
         <div class="chart-title">4. абсолютное кол-во перехваченных заказов в рамках складов / компании</div>
+        <div class="chart-sub">Абсолютный перехват (заказы)</div>
         <canvas id="c_intAbs"></canvas>
       </div>
 
-      <div class="card chart-card span-4">
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">5. % ошибочных перемещений в тару сортировки</div>
+        <div class="chart-sub">Взвешено по объему товаров</div>
+        <canvas id="c_sortErr"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
         <div class="chart-title">Операционный контекст: поток товаров на приемке (шт)</div>
+        <div class="chart-sub">Объем входящего потока влияет на все метрики выше</div>
         <canvas id="c_units"></canvas>
       </div>
+
     </div>
   </div>
 
   <!-- TABLE -->
   <div id="tableView" style="display:none;">
-    <div class="card" style="padding:12px;">
+    <div class="card" style="padding:14px;">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
         <div>
-          <div style="font-weight:900;font-size:14px;">Детализация</div>
-          <div class="muted" style="font-size:12px;margin-top:4px;">Сортировка по клику на заголовок. Sticky header + итоговая строка.</div>
+          <div style="font-weight:950;font-size:14px;">Детализация</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700;margin-top:4px;">
+            Сортировка по клику на заголовок. Sticky header + итоговая строка.
+          </div>
         </div>
 
         <div class="table-controls">
@@ -292,7 +520,6 @@
 /* =========================
    Mock data generator (локально)
    ========================= */
-
 const WAREHOUSES = [
   "DE-Berlin-01",
   "DE-Leipzig-02",
@@ -307,13 +534,12 @@ const state = {
   filtered: [],
   mode: "warehouse",
   sort: { key: null, dir: "desc" },
-  charts: {}
+  charts: {},
+  selectedWarehouses: new Set()
 };
 
 function rand(min, max){ return Math.random()*(max-min)+min; }
-function rint(min, max){ return Math.floor(rand(min, max+1)); }
 function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
-
 function fmtNum(n){ return n.toLocaleString("ru-RU"); }
 function fmtPct(x){ return (x*100).toFixed(1) + "%"; }
 function fmtHours(x){ return x.toFixed(1) + " ч"; }
@@ -327,28 +553,110 @@ function dateKey(d){
 }
 function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
 
+function prettyRuDate(iso){
+  // iso: YYYY-MM-DD -> "18 февраля 2026 г."
+  const d = new Date(iso + "T00:00:00");
+  const months = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} г.`;
+}
+
 function defaultDateRange(){
   const to = new Date();
   const from = addDays(to, -27);
   return { from: dateKey(from), to: dateKey(to) };
 }
-
-function setUpFilters(){
-  const whSel = document.getElementById("whSelect");
-  whSel.innerHTML = "";
-  WAREHOUSES.forEach(w=>{
-    const opt = document.createElement("option");
-    opt.value = w; opt.textContent = w; opt.selected = true;
-    whSel.appendChild(opt);
-  });
-
-  const {from, to} = defaultDateRange();
-  document.getElementById("dateFrom").value = from;
-  document.getElementById("dateTo").value = to;
+function getDateRange(){
+  return {
+    from: document.getElementById("dateFrom").value,
+    to: document.getElementById("dateTo").value
+  };
+}
+function updateRangeLabel(){
+  const {from,to} = getDateRange();
+  const label = `${prettyRuDate(from)} — ${prettyRuDate(to)}`;
+  document.getElementById("rangeLabel").textContent = label;
 }
 
+/* ===== Custom multiselect (styled) ===== */
+function buildWarehouseMenu(){
+  const menu = document.getElementById("whMenu");
+  menu.innerHTML = "";
+
+  // helper row builder
+  const mkRow = (name, checked, hint, onToggle)=>{
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `
+      <input type="checkbox" ${checked ? "checked" : ""} />
+      <div class="name">${name}</div>
+      <div class="hint">${hint || ""}</div>
+    `;
+    const cb = row.querySelector("input");
+    row.addEventListener("click", (e)=>{
+      // allow clicking anywhere
+      if(e.target.tagName !== "INPUT") cb.checked = !cb.checked;
+      onToggle(cb.checked);
+      e.stopPropagation();
+    });
+    cb.addEventListener("click",(e)=> e.stopPropagation());
+    return row;
+  };
+
+  // Select all
+  const allChecked = state.selectedWarehouses.size === WAREHOUSES.length;
+  menu.appendChild(mkRow("Выбрать все", allChecked, "", (isOn)=>{
+    if(isOn){
+      state.selectedWarehouses = new Set(WAREHOUSES);
+    } else {
+      state.selectedWarehouses = new Set();
+    }
+    buildWarehouseMenu();
+    updateWarehouseControl();
+  }));
+
+  // Divider
+  const hr = document.createElement("div");
+  hr.style.height="1px";
+  hr.style.background="var(--line)";
+  hr.style.margin="8px 0";
+  menu.appendChild(hr);
+
+  // Warehouses
+  WAREHOUSES.forEach(w=>{
+    const checked = state.selectedWarehouses.has(w);
+    menu.appendChild(mkRow(w, checked, "", (isOn)=>{
+      if(isOn) state.selectedWarehouses.add(w);
+      else state.selectedWarehouses.delete(w);
+      buildWarehouseMenu();
+      updateWarehouseControl();
+    }));
+  });
+}
+
+function updateWarehouseControl(){
+  const cnt = state.selectedWarehouses.size;
+  document.getElementById("whCount").textContent = cnt;
+
+  const main = document.getElementById("whMain");
+  if(cnt === 0){
+    main.textContent = "Не выбрано";
+  } else if(cnt === WAREHOUSES.length){
+    main.textContent = "Выбраны все";
+  } else {
+    main.textContent = `Выбрано: ${cnt}`;
+  }
+}
+
+function toggleWarehouseMenu(force){
+  const menu = document.getElementById("whMenu");
+  const open = (typeof force === "boolean") ? force : !menu.classList.contains("open");
+  menu.classList.toggle("open", open);
+}
+
+/* =========================
+   Mock rows
+   ========================= */
 function generateMockRows(){
-  // генерируем дневные агрегаты по складам (реалистичные колебания)
   const {from, to} = getDateRange();
   const start = new Date(from);
   const end = new Date(to);
@@ -366,43 +674,32 @@ function generateMockRows(){
         wh.includes("Munich") ? 0.90 :
         wh.includes("Poznan") ? 0.95 : 0.88;
 
-      // базовый поток
       const orders = Math.round(rand(320, 780) * whFactor * weekendFactor);
       const unitsPerOrder = rand(1.10, 1.55);
       const units = Math.round(orders * unitsPerOrder);
 
-      // перехват на приемке: доля + абсолют
       const interceptRateOrders = clamp(rand(0.018, 0.085) + (whFactor-1)*0.01, 0.01, 0.12);
       const interceptAbs = Math.round(orders * interceptRateOrders);
-
-      // доля перехватов от товаров на приемке
       const interceptRateUnits = clamp(interceptRateOrders * rand(0.85, 1.20), 0.01, 0.14);
 
-      // скорость отгрузки (часы) — хотим снижать; немного тренда
       const dayIndex = Math.round((d - start)/(24*3600*1000));
-      const trend = -0.015 * dayIndex; // улучшение по времени
+      const trend = -0.015 * dayIndex; // улучшение
       const speedHours = clamp(rand(15.5, 26.5) + trend + (whFactor-1)*1.2, 10.5, 34);
 
-      // касания на товар — хотим снижать
       const touches = clamp(rand(2.2, 4.1) + (whFactor-1)*0.25 + trend*0.3, 1.6, 5.2);
 
-      // % ошибочных перемещений в тару сортировки — хотим снижать
       const sortErrRate = clamp(rand(0.002, 0.020) + (whFactor-1)*0.002 + (dow===1?0.001:0), 0.001, 0.03);
 
       rows.push({
         date: dateKey(d),
         warehouse: wh,
-
         orders,
         units,
-
         intercept_rate_orders: interceptRateOrders,
         intercept_rate_units: interceptRateUnits,
         intercept_abs: interceptAbs,
-
         speed_hours: speedHours,
         touches_per_unit: touches,
-
         sort_error_rate: sortErrRate
       });
     });
@@ -410,26 +707,14 @@ function generateMockRows(){
   return rows;
 }
 
-function getSelectedWarehouses(){
-  const sel = document.getElementById("whSelect");
-  return Array.from(sel.selectedOptions).map(o=>o.value);
-}
-function getDateRange(){
-  return {
-    from: document.getElementById("dateFrom").value,
-    to: document.getElementById("dateTo").value
-  };
-}
-
 function applyFilters(){
-  const whs = new Set(getSelectedWarehouses());
   const {from, to} = getDateRange();
-  state.filtered = state.raw.filter(r => whs.has(r.warehouse) && r.date >= from && r.date <= to);
+  state.filtered = state.raw.filter(r =>
+    state.selectedWarehouses.has(r.warehouse) &&
+    r.date >= from && r.date <= to
+  );
 }
 
-/* =========================
-   Aggregations
-   ========================= */
 function groupBy(arr, keyFn){
   const m = new Map();
   for(const x of arr){
@@ -452,43 +737,34 @@ function agg(rows){
   const units  = sum("units");
   const interceptAbs = sum("intercept_abs");
 
-  // ВАЖНО: доли — взвешенные по объему (orders/units)
   const interceptRateOrders = wavg("intercept_rate_orders","orders");
   const interceptRateUnits  = wavg("intercept_rate_units","units");
 
-  const speedHours = wavg("speed_hours","orders"); // по заказам
-  const touchesPerUnit = wavg("touches_per_unit","units"); // по товарам
-  const sortErrRate = wavg("sort_error_rate","units"); // по товарам
+  const speedHours = wavg("speed_hours","orders");
+  const touchesPerUnit = wavg("touches_per_unit","units");
+  const sortErrRate = wavg("sort_error_rate","units");
 
-  return {
-    orders, units,
-    interceptRateOrders, interceptRateUnits,
-    interceptAbs,
-    speedHours,
-    touchesPerUnit,
-    sortErrRate
-  };
+  return { orders, units, interceptAbs, interceptRateOrders, interceptRateUnits, speedHours, touchesPerUnit, sortErrRate };
 }
 
 /* =========================
-   KPI render (точные названия)
+   KPI render (2 rows x 3)
    ========================= */
 function buildKpis(){
   const kpiGrid = document.getElementById("kpiGrid");
   const cur = agg(state.filtered);
 
-  // для дельт: сравнение с предыдущим периодом той же длины
+  // compare with previous equal-length window (for deltas)
   const {from, to} = getDateRange();
   const start = new Date(from), end = new Date(to);
   const days = Math.round((end - start)/(24*3600*1000)) + 1;
   const prevTo = addDays(start, -1);
   const prevFrom = addDays(prevTo, -(days-1));
 
-  const prev = state.raw.filter(r => {
-    const dk = r.date;
-    return dk >= dateKey(prevFrom) && dk <= dateKey(prevTo)
-      && new Set(getSelectedWarehouses()).has(r.warehouse);
-  });
+  const prev = state.raw.filter(r =>
+    r.date >= dateKey(prevFrom) && r.date <= dateKey(prevTo) &&
+    state.selectedWarehouses.has(r.warehouse)
+  );
   const prevAgg = agg(prev);
 
   function deltaPct(curr, prev){
@@ -510,13 +786,13 @@ function buildKpis(){
       goodIfDown: true
     },
     {
-      label: "3. % перехваченных заказов на приемке: от кол-ва заказов в рамках склада",
+      label: "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада",
       value: fmtPct(cur.interceptRateOrders),
       delta: deltaPct(cur.interceptRateOrders, prevAgg.interceptRateOrders),
       goodIfDown: false
     },
     {
-      label: "3. % перехваченных заказов на приемке: от кол-ва товаров на приемке в рамках склада",
+      label: "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада",
       value: fmtPct(cur.interceptRateUnits),
       delta: deltaPct(cur.interceptRateUnits, prevAgg.interceptRateUnits),
       goodIfDown: false
@@ -541,11 +817,11 @@ function buildKpis(){
     d.className = "card kpi";
     const delta = c.delta;
     const isImprovement = c.goodIfDown ? (delta<0) : (delta>0);
-    const deltaClass = isImprovement ? "delta" : "delta neg";
+    const deltaClass = isImprovement ? "kdelta" : "kdelta neg";
     const sign = delta>=0 ? "+" : "";
     d.innerHTML = `
-      <div class="label">${c.label}</div>
-      <div class="value">${c.value}</div>
+      <div class="klabel">${c.label}</div>
+      <div class="kvalue">${c.value}</div>
       <div class="${deltaClass}">${sign}${(delta*100).toFixed(1)}% к предыдущему периоду</div>
     `;
     kpiGrid.appendChild(d);
@@ -553,7 +829,7 @@ function buildKpis(){
 }
 
 /* =========================
-   Charts (Chart.js)
+   Charts
    ========================= */
 function destroyChart(id){
   if(state.charts[id]){
@@ -563,14 +839,12 @@ function destroyChart(id){
 }
 
 function buildCharts(){
-  // агрегация по дням (компания)
   const byDay = groupBy(state.filtered, r=>r.date);
   const labels = Array.from(byDay.keys()).sort();
 
   const series = labels.map(day=>{
     const a = agg(byDay.get(day));
     return {
-      day,
       speed: a.speedHours,
       touches: a.touchesPerUnit,
       intRateOrders: a.interceptRateOrders,
@@ -581,10 +855,19 @@ function buildCharts(){
     };
   });
 
+  const common = {
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{ legend:{ display:true, labels:{ boxWidth:18, boxHeight:10 } } },
+    scales:{
+      x:{ ticks:{ maxRotation:45, minRotation:45 } },
+      y:{ beginAtZero:false }
+    }
+  };
+
   const mkLine = (canvasId, label, data, isPercent=false)=>{
     destroyChart(canvasId);
-    const ctx = document.getElementById(canvasId);
-    state.charts[canvasId] = new Chart(ctx, {
+    state.charts[canvasId] = new Chart(document.getElementById(canvasId), {
       type:"line",
       data:{
         labels,
@@ -593,18 +876,15 @@ function buildCharts(){
           data,
           tension:0.25,
           fill:false,
-          pointRadius:2.5
+          pointRadius:2.4
         }]
       },
       options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{ legend:{ display:true } },
+        ...common,
         scales:{
+          ...common.scales,
           y:{
-            ticks:{
-              callback:(v)=> isPercent ? (v*100).toFixed(0)+"%" : v
-            }
+            ticks:{ callback:(v)=> isPercent ? (v*100).toFixed(0)+"%" : v }
           }
         }
       }
@@ -613,60 +893,20 @@ function buildCharts(){
 
   const mkBar = (canvasId, label, data)=>{
     destroyChart(canvasId);
-    const ctx = document.getElementById(canvasId);
-    state.charts[canvasId] = new Chart(ctx, {
+    state.charts[canvasId] = new Chart(document.getElementById(canvasId), {
       type:"bar",
-      data:{
-        labels,
-        datasets:[{ label, data }]
-      },
-      options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{ legend:{ display:true } }
-      }
+      data:{ labels, datasets:[{ label, data }] },
+      options:{ ...common }
     });
   };
 
-  mkLine("c_speed",
-    "Время, часы",
-    series.map(s=>+s.speed.toFixed(2)),
-    false
-  );
-
-  mkLine("c_touches",
-    "Касания на товар",
-    series.map(s=>+s.touches.toFixed(2)),
-    false
-  );
-
-  mkLine("c_intRateOrders",
-    "Доля от заказов",
-    series.map(s=>+s.intRateOrders.toFixed(4)),
-    true
-  );
-
-  mkLine("c_intRateUnits",
-    "Доля от товаров",
-    series.map(s=>+s.intRateUnits.toFixed(4)),
-    true
-  );
-
-  mkLine("c_sortErr",
-    "Ошибки перемещений",
-    series.map(s=>+s.sortErr.toFixed(4)),
-    true
-  );
-
-  mkBar("c_intAbs",
-    "Перехвачено, заказов",
-    series.map(s=>s.intAbs)
-  );
-
-  mkBar("c_units",
-    "Товаров на приемке, шт",
-    series.map(s=>s.units)
-  );
+  mkLine("c_speed", "Время, часы", series.map(s=>+s.speed.toFixed(2)), false);
+  mkLine("c_touches", "Касания на товар", series.map(s=>+s.touches.toFixed(2)), false);
+  mkLine("c_intRateOrders", "Доля от заказов", series.map(s=>+s.intRateOrders.toFixed(4)), true);
+  mkLine("c_intRateUnits", "Доля от товаров", series.map(s=>+s.intRateUnits.toFixed(4)), true);
+  mkBar("c_intAbs", "Перехвачено, заказов", series.map(s=>s.intAbs));
+  mkLine("c_sortErr", "Ошибки перемещений", series.map(s=>+s.sortErr.toFixed(4)), true);
+  mkBar("c_units", "Товаров на приемке, шт", series.map(s=>s.units));
 }
 
 /* =========================
@@ -686,14 +926,14 @@ function buildTable(){
       return {
         key: wh,
         "Склад": wh,
+        "Заказы (шт)": a.orders,
+        "Товары на приемке (шт)": a.units,
+        "4. абсолютное кол-во перехваченных заказов в рамках складов / компании": a.interceptAbs,
+        "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада": a.interceptRateOrders,
+        "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада": a.interceptRateUnits,
         "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)": a.speedHours,
         "2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт": a.touchesPerUnit,
-        "3. % перехваченных заказов на приемке: от кол-ва заказов в рамках склада": a.interceptRateOrders,
-        "3. % перехваченных заказов на приемке: от кол-ва товаров на приемке в рамках склада": a.interceptRateUnits,
-        "4. абсолютное кол-во перехваченных заказов в рамках складов / компании": a.interceptAbs,
-        "5. % ошибочных перемещений в тару сортировки": a.sortErrRate,
-        "Заказы (шт)": a.orders,
-        "Товары на приемке (шт)": a.units
+        "5. % ошибочных перемещений в тару сортировки": a.sortErrRate
       };
     });
   } else {
@@ -703,14 +943,14 @@ function buildTable(){
       return {
         key: day,
         "Период": day,
+        "Заказы (шт)": a.orders,
+        "Товары на приемке (шт)": a.units,
+        "4. абсолютное кол-во перехваченных заказов в рамках складов / компании": a.interceptAbs,
+        "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада": a.interceptRateOrders,
+        "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада": a.interceptRateUnits,
         "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)": a.speedHours,
         "2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт": a.touchesPerUnit,
-        "3. % перехваченных заказов на приемке: от кол-ва заказов в рамках склада": a.interceptRateOrders,
-        "3. % перехваченных заказов на приемке: от кол-ва товаров на приемке в рамках склада": a.interceptRateUnits,
-        "4. абсолютное кол-во перехваченных заказов в рамках складов / компании": a.interceptAbs,
-        "5. % ошибочных перемещений в тару сортировки": a.sortErrRate,
-        "Заказы (шт)": a.orders,
-        "Товары на приемке (шт)": a.units
+        "5. % ошибочных перемещений в тару сортировки": a.sortErrRate
       };
     });
   }
@@ -718,20 +958,17 @@ function buildTable(){
   // search
   const q = (document.getElementById("tableSearch").value||"").trim().toLowerCase();
   if(q){
-    rows = rows.filter(r=>{
-      return Object.values(r).some(v=>String(v).toLowerCase().includes(q));
-    });
+    rows = rows.filter(r => Object.values(r).some(v=>String(v).toLowerCase().includes(q)));
   }
 
-  // columns
   const dimCol = (state.mode==="warehouse") ? "Склад" : "Период";
   const cols = [
     dimCol,
     "Заказы (шт)",
     "Товары на приемке (шт)",
     "4. абсолютное кол-во перехваченных заказов в рамках складов / компании",
-    "3. % перехваченных заказов на приемке: от кол-ва заказов в рамках склада",
-    "3. % перехваченных заказов на приемке: от кол-ва товаров на приемке в рамках склада",
+    "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада",
+    "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада",
     "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)",
     "2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт",
     "5. % ошибочных перемещений в тару сортировки"
@@ -748,17 +985,15 @@ function buildTable(){
     });
   }
 
-  // head
   thead.innerHTML = "<tr>" + cols.map(c=>`<th data-col="${c}">${c}</th>`).join("") + "</tr>";
 
-  // body
   tbody.innerHTML = rows.map(r=>{
     return "<tr>" + cols.map(c=>{
       const v = r[c];
       const isNum = typeof v === "number";
       let out = v;
 
-      if(c.includes("% перехваченных") || c.includes("% ошибочных")){
+      if(c.startsWith("3. %") || c.startsWith("5. %")){
         out = fmtPct(v);
       } else if(c.startsWith("1. ")){
         out = fmtHours(v);
@@ -767,20 +1002,18 @@ function buildTable(){
       } else if(isNum){
         out = fmtNum(Math.round(v));
       }
-      const cls = isNum ? "right" : "";
-      return `<td class="${cls}">${out}</td>`;
+      return `<td class="${isNum ? "right" : ""}">${out}</td>`;
     }).join("") + "</tr>";
   }).join("");
 
-  // footer totals (итого по отфильтрованным)
   const total = agg(state.filtered);
   const totalRow = {};
   totalRow[dimCol] = "Итого";
   totalRow["Заказы (шт)"] = total.orders;
   totalRow["Товары на приемке (шт)"] = total.units;
   totalRow["4. абсолютное кол-во перехваченных заказов в рамках складов / компании"] = total.interceptAbs;
-  totalRow["3. % перехваченных заказов на приемке: от кол-ва заказов в рамках склада"] = total.interceptRateOrders;
-  totalRow["3. % перехваченных заказов на приемке: от кол-ва товаров на приемке в рамках склада"] = total.interceptRateUnits;
+  totalRow["3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада"] = total.interceptRateOrders;
+  totalRow["3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада"] = total.interceptRateUnits;
   totalRow["1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)"] = total.speedHours;
   totalRow["2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт"] = total.touchesPerUnit;
   totalRow["5. % ошибочных перемещений в тару сортировки"] = total.sortErrRate;
@@ -788,18 +1021,11 @@ function buildTable(){
   tfoot.innerHTML = "<tr>" + cols.map(c=>{
     const v = totalRow[c];
     let out = v;
-
-    if(c.includes("% перехваченных") || c.includes("% ошибочных")){
-      out = fmtPct(v);
-    } else if(c.startsWith("1. ")){
-      out = fmtHours(v);
-    } else if(c.startsWith("2. ")){
-      out = fmt1(v);
-    } else if(typeof v === "number"){
-      out = fmtNum(Math.round(v));
-    }
-    const cls = (typeof v === "number") ? "right" : "";
-    return `<td class="${cls}">${out}</td>`;
+    if(c.startsWith("3. %") || c.startsWith("5. %")) out = fmtPct(v);
+    else if(c.startsWith("1. ")) out = fmtHours(v);
+    else if(c.startsWith("2. ")) out = fmt1(v);
+    else if(typeof v === "number") out = fmtNum(Math.round(v));
+    return `<td class="${typeof v === "number" ? "right" : ""}">${out}</td>`;
   }).join("") + "</tr>";
 
   // click sorting
@@ -825,7 +1051,6 @@ function setTab(tab){
   document.getElementById("chartsView").style.display = (tab==="charts") ? "block" : "none";
   document.getElementById("tableView").style.display  = (tab==="table")  ? "block" : "none";
 }
-
 function setMode(mode){
   state.mode = mode;
   document.querySelectorAll(".pill").forEach(p=>p.classList.toggle("active", p.dataset.mode===mode));
@@ -833,6 +1058,7 @@ function setMode(mode){
 }
 
 function refreshAll(regen=false){
+  updateRangeLabel();
   if(regen){
     state.raw = generateMockRows();
   }
@@ -842,25 +1068,64 @@ function refreshAll(regen=false){
   buildTable();
 }
 
-document.getElementById("refreshBtn").addEventListener("click", ()=> refreshAll(true));
-
-document.querySelectorAll(".tab").forEach(t=>{
-  t.addEventListener("click", ()=> setTab(t.dataset.tab));
-});
-
-document.querySelectorAll(".pill").forEach(p=>{
-  p.addEventListener("click", ()=> setMode(p.dataset.mode));
-});
-
-document.getElementById("tableSearch").addEventListener("input", ()=> buildTable());
-
 /* =========================
    Init
    ========================= */
-setUpFilters();
-state.raw = generateMockRows();
-refreshAll(false);
+(function init(){
+  // dates
+  const {from,to} = defaultDateRange();
+  document.getElementById("dateFrom").value = from;
+  document.getElementById("dateTo").value = to;
+
+  // warehouses select all
+  state.selectedWarehouses = new Set(WAREHOUSES);
+  buildWarehouseMenu();
+  updateWarehouseControl();
+  updateRangeLabel();
+
+  // open/close dropdown
+  document.getElementById("whControl").addEventListener("click", (e)=>{
+    // do not toggle if clicking clear
+    if(e.target && e.target.id === "whClear") return;
+    toggleWarehouseMenu();
+  });
+  document.getElementById("whClear").addEventListener("click", (e)=>{
+    e.stopPropagation();
+    state.selectedWarehouses = new Set(WAREHOUSES); // reset to all like typical UX
+    buildWarehouseMenu();
+    updateWarehouseControl();
+    toggleWarehouseMenu(false);
+    refreshAll(false);
+  });
+
+  // close menu on outside click
+  document.addEventListener("click", ()=>{
+    toggleWarehouseMenu(false);
+  });
+  document.getElementById("whMenu").addEventListener("click",(e)=> e.stopPropagation());
+
+  // tabs
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.addEventListener("click", ()=> setTab(t.dataset.tab));
+  });
+
+  // table mode
+  document.querySelectorAll(".pill").forEach(p=>{
+    p.addEventListener("click", ()=> setMode(p.dataset.mode));
+  });
+
+  // search
+  document.getElementById("tableSearch").addEventListener("input", ()=> buildTable());
+
+  // refresh button
+  document.getElementById("refreshBtn").addEventListener("click", ()=> refreshAll(true));
+
+  // data
+  state.raw = generateMockRows();
+  refreshAll(false);
+})();
 </script>
 </body>
 </html>
+
 
