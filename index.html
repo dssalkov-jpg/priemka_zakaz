@@ -41,7 +41,7 @@
     padding:14px 16px;
     display:flex;
     align-items:center;
-    justify-content:center;
+    justify-content:space-between;
     gap:12px;
   }
   .title{
@@ -102,6 +102,52 @@
     cursor:pointer;
     flex:0 0 auto;
   }
+
+  /* Header warehouse control */
+  .whHeaderWrap{ position:relative; flex:0 0 auto; }
+  .whHeaderLabel{
+    font-size:12px;
+    font-weight:900;
+    opacity:.95;
+    margin-bottom:6px;
+  }
+  .whHeaderControl{
+    border:none;
+    box-shadow:0 10px 24px rgba(0,0,0,.18);
+    background:rgba(255,255,255,.96);
+  }
+  .whHeaderControl .main{ color:#111827; }
+  .whHeaderControl .sub{ color:#6b7280; }
+  .whHeaderControl .caret,
+  .whHeaderControl .clear{
+    background:#f3f4f6;
+  }
+  .menu{
+    position:absolute;
+    top:52px; left:0;
+    width:340px;
+    max-height:340px;
+    overflow:auto;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    display:none;
+    z-index:60;
+    padding:8px;
+  }
+  .menu.open{ display:block; }
+  .menu .row{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 10px;
+    border-radius:12px;
+    cursor:pointer;
+  }
+  .menu .row:hover{ background:#fafafa; }
+  .menu input{ width:16px; height:16px; }
+  .menu .row .name{ font-weight:800; }
+  .menu .row .hint{ font-size:12px; color:var(--muted); margin-left:auto; }
+
   .daterange{
     display:flex; align-items:center; gap:10px; flex-wrap:wrap;
   }
@@ -138,33 +184,6 @@
   }
   .btn:active{ transform:translateY(1px); }
 
-  .dropdown{ position:relative; }
-  .menu{
-    position:absolute;
-    top:52px; left:0;
-    width:340px;
-    max-height:340px;
-    overflow:auto;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:14px;
-    box-shadow:var(--shadow);
-    display:none;
-    z-index:60;
-    padding:8px;
-  }
-  .menu.open{ display:block; }
-  .menu .row{
-    display:flex; align-items:center; gap:10px;
-    padding:10px 10px;
-    border-radius:12px;
-    cursor:pointer;
-  }
-  .menu .row:hover{ background:#fafafa; }
-  .menu input{ width:16px; height:16px; }
-  .menu .row .name{ font-weight:800; }
-  .menu .row .hint{ font-size:12px; color:var(--muted); margin-left:auto; }
-
   .container{ max-width:1200px; margin:0 auto; padding:18px 16px 26px; }
 
   .tabs{
@@ -200,6 +219,9 @@
   @media (max-width:900px){
     .kpi-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
     .btn{ margin-left:0; }
+    .whHeaderWrap{ width:100%; }
+    .whHeaderControl{ width:100%; }
+    .menu{ width:100%; }
   }
   @media (max-width:560px){
     .kpi-grid{ grid-template-columns:1fr; }
@@ -268,16 +290,15 @@
   }
   .right{ text-align:right; }
 
-  /* Table search (left aligned + labeled) */
-  .table-header{
+  /* Search-by-ID tab */
+  .searchbar{
     display:flex;
+    gap:10px;
     align-items:flex-end;
-    justify-content:flex-start; /* ⬅ left */
-    gap:12px;
     flex-wrap:wrap;
     margin-bottom:12px;
   }
-  .search-group{ display:flex; flex-direction:column; gap:6px; }
+  .search-group{ display:flex; flex-direction:column; gap:6px; flex:1 1 520px; }
   .search-label{
     font-size:12px;
     color:var(--muted);
@@ -288,14 +309,29 @@
     border:1px solid var(--line);
     border-radius:16px;
     padding:12px 14px;
-    min-width:420px;
+    width:100%;
     outline:none;
     font-weight:900;
     color:#111827;
     box-shadow:0 2px 10px rgba(17,24,39,.04);
   }
-  @media (max-width:720px){
-    .search{ min-width:100%; }
+  .btn-secondary{
+    background:#111827;
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:12px 18px;
+    font-weight:900;
+    cursor:pointer;
+    min-height:44px;
+    box-shadow:0 14px 28px rgba(17,24,39,.18);
+    flex:0 0 auto;
+  }
+  .hint{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:800;
+    margin:8px 0 0;
   }
 </style>
 </head>
@@ -303,15 +339,14 @@
 <body>
 <header>
   <div class="topbar">
-    <div class="title">Заказ на приемке</div>
-  </div>
-</header>
+    <div style="width:1px;"></div>
 
-<div class="filtersbar">
-  <div class="filters">
-    <div class="fgroup dropdown" style="min-width:340px;">
-      <div class="flabel">Склад (выбрано: <span id="whCount">0</span>) *</div>
-      <div class="control" id="whControl" style="cursor:pointer;">
+    <div class="title">Заказ на приемке</div>
+
+    <!-- Header: Warehouses multiselect -->
+    <div class="whHeaderWrap">
+      <div class="whHeaderLabel">Склад (выбрано: <span id="whCount">0</span>) *</div>
+      <div class="control whHeaderControl" id="whControl" style="cursor:pointer; min-width:340px;">
         <div class="control-col">
           <div class="main" id="whMain">Выбраны все</div>
           <div class="sub">Мультивыбор</div>
@@ -322,7 +357,12 @@
       </div>
       <div class="menu" id="whMenu"></div>
     </div>
+  </div>
+</header>
 
+<div class="filtersbar">
+  <div class="filters">
+    <!-- оставили только период -->
     <div class="fgroup" style="min-width:420px; flex:1 1 auto;">
       <div class="flabel">Период *</div>
       <div class="daterange">
@@ -348,6 +388,7 @@
   <div class="tabs">
     <div class="tab active" data-tab="charts">Графики</div>
     <div class="tab" data-tab="table">Таблица</div>
+    <div class="tab" data-tab="search">Поиск по ID заказа</div>
   </div>
 
   <div class="kpi-grid" id="kpiGrid"></div>
@@ -432,20 +473,35 @@
     </div>
   </div>
 
+  <!-- TABLE tab: only the table (removed search box) -->
   <div id="tableView" style="display:none;">
     <div class="card" style="padding:14px;">
-      <div class="table-header">
-        <div class="search-group">
-          <div class="search-label">поиск по id заказа</div>
-          <input class="search" id="tableSearch" placeholder="Введите ID заказа..." />
-        </div>
-      </div>
-
       <div class="table-wrap">
         <table id="dataTable">
           <thead></thead>
           <tbody></tbody>
           <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: Search by Order ID tab -->
+  <div id="searchView" style="display:none;">
+    <div class="card" style="padding:14px;">
+      <div class="searchbar">
+        <div class="search-group">
+          <div class="search-label">поиск по id заказа</div>
+          <input class="search" id="orderIdInput" placeholder="Введите ID заказа (5 цифр)..." inputmode="numeric" />
+          <div class="hint">Для теста: введите 5 цифр и нажмите «Искать» — появятся тестовые результаты.</div>
+        </div>
+        <button class="btn-secondary" id="orderIdBtn">Искать</button>
+      </div>
+
+      <div class="table-wrap">
+        <table id="searchTable" style="min-width:1180px;">
+          <thead></thead>
+          <tbody></tbody>
         </table>
       </div>
     </div>
@@ -465,7 +521,8 @@ const state = {
   sort: { key: null, dir: "desc" },
   charts: {},
   selectedWarehouses: new Set(),
-  kpiDeltaPct: {}
+  kpiDeltaPct: {},
+  searchRows: [] // NEW: results for "Поиск по ID заказа"
 };
 
 function rand(min, max){ return Math.random()*(max-min)+min; }
@@ -505,7 +562,7 @@ function updateRangeLabel(){
   document.getElementById("rangeLabel").textContent = `${prettyRuDate(from)} — ${prettyRuDate(to)}`;
 }
 
-/* ===== Custom multiselect ===== */
+/* ===== Custom multiselect (moved to header) ===== */
 function buildWarehouseMenu(){
   const menu = document.getElementById("whMenu");
   menu.innerHTML = "";
@@ -578,7 +635,6 @@ function hashCode(str){
 }
 
 function makeOrderId(wh, date){
-  // deterministic-ish but still looks like an ID
   const base = Math.abs(hashCode(wh + "|" + date));
   return String(1000000000 + (base % 9000000000));
 }
@@ -828,7 +884,6 @@ function buildTable(){
   const tbody = table.querySelector("tbody");
   const tfoot = table.querySelector("tfoot");
 
-  // 1 row per warehouse (aggregated within selected period)
   const g = groupBy(state.filtered, r => r.warehouse);
 
   let rows = Array.from(g.entries()).map(([warehouse, items])=>{
@@ -841,17 +896,9 @@ function buildTable(){
       "Кол-во перехваченных заказов на приемке - %": a.interceptRateOrders,
       "Ср. скорость отгрузки заказа": a.speedHours,
       "Ср. кол-во касаний на товар": a.touchesPerUnit,
-      "% ошибочных перемещений в тару сортировки": a.sortErrRate,
-      "__order_id": (items[0] ? items[0].order_id : "")
+      "% ошибочных перемещений в тару сортировки": a.sortErrRate
     };
   });
-
-  // "Поиск по id заказа" — demo behavior:
-  // filter warehouses whose synthetic order_id contains the query
-  const q = (document.getElementById("tableSearch").value||"").trim().toLowerCase();
-  if(q){
-    rows = rows.filter(r => String(r["__order_id"]).toLowerCase().includes(q));
-  }
 
   const cols = [
     "Склад",
@@ -932,13 +979,118 @@ function buildTable(){
   });
 }
 
+/* ===== NEW: Search-by-order-id tab (mock results) ===== */
+function pad2(n){ return String(n).padStart(2,"0"); }
+function fmtDateRu(d){
+  return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`;
+}
+function fmtTimeRu(d){
+  return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+}
+function seededRand(seed){
+  // simple deterministic rng [0,1)
+  let x = seed >>> 0;
+  x ^= x << 13; x >>>= 0;
+  x ^= x >> 17; x >>>= 0;
+  x ^= x << 5;  x >>>= 0;
+  return (x % 10000) / 10000;
+}
+function buildSearchResults(orderId5){
+  // Use selected warehouses; if none selected, fallback to all
+  const whList = Array.from(state.selectedWarehouses.size ? state.selectedWarehouses : new Set(WAREHOUSES)).sort();
+
+  const seed = Math.abs(hashCode(String(orderId5)));
+  const baseDay = new Date(getDateRange().to + "T00:00:00");
+
+  const rowsCount = 6;
+  const rows = [];
+  for(let i=0;i<rowsCount;i++){
+    const r0 = seededRand(seed + i*101);
+    const r1 = seededRand(seed + i*101 + 7);
+    const r2 = seededRand(seed + i*101 + 13);
+
+    const wh = whList[Math.floor(r0 * whList.length)] || "Коледино";
+
+    const orderDt = new Date(baseDay);
+    orderDt.setDate(orderDt.getDate() - (1 + Math.floor(r1 * 10)));
+    orderDt.setHours(8 + Math.floor(r2 * 10), Math.floor(r1 * 60), Math.floor(r0 * 60));
+
+    const arrivalDt = new Date(orderDt);
+    arrivalDt.setHours(arrivalDt.getHours() + (3 + Math.floor(r0 * 10)));
+    arrivalDt.setMinutes(arrivalDt.getMinutes() + (10 + Math.floor(r2 * 40)));
+
+    const shipDt = new Date(arrivalDt);
+    shipDt.setHours(shipDt.getHours() + (6 + Math.floor(r1 * 12)));
+    shipDt.setMinutes(shipDt.getMinutes() + Math.floor(r0 * 50));
+
+    const tableNo = 1 + Math.floor(r2 * 30);
+    const empNo = 1000 + Math.floor(r1 * 9000);
+
+    rows.push({
+      "Склад": wh,
+      "ID заказа": String(orderId5),
+      "Дата заказа": fmtDateRu(orderDt),
+      "Время заказ": fmtTimeRu(orderDt),
+      "Дата поступления товара на стол приемки": fmtDateRu(arrivalDt),
+      "Время поступления товара на стол приемки": fmtTimeRu(arrivalDt),
+      "№ Стола приемки": String(tableNo),
+      "№ Сотрудника на столе приемки": String(empNo),
+      "Время отгрузки заказа": fmtTimeRu(shipDt)
+    });
+  }
+  return rows;
+}
+
+function renderSearchTable(){
+  const table = document.getElementById("searchTable");
+  const thead = table.querySelector("thead");
+  const tbody = table.querySelector("tbody");
+
+  const cols = [
+    "Склад",
+    "ID заказа",
+    "Дата заказа",
+    "Время заказ",
+    "Дата поступления товара на стол приемки",
+    "Время поступления товара на стол приемки",
+    "№ Стола приемки",
+    "№ Сотрудника на столе приемки",
+    "Время отгрузки заказа"
+  ];
+
+  thead.innerHTML = "<tr>" + cols.map(c=>`<th>${c}</th>`).join("") + "</tr>";
+
+  if(!state.searchRows || state.searchRows.length === 0){
+    tbody.innerHTML = ""; // пусто, пока не искали
+    return;
+  }
+
+  tbody.innerHTML = state.searchRows.map(r=>{
+    return "<tr>" + cols.map(c=>{
+      return `<td>${r[c] ?? ""}</td>`;
+    }).join("") + "</tr>";
+  }).join("");
+}
+
+function onSearchClick(){
+  const v = (document.getElementById("orderIdInput").value || "").trim();
+  if(/^\d{5}$/.test(v)){
+    state.searchRows = buildSearchResults(v);
+  } else {
+    state.searchRows = []; // неверный формат -> пусто
+  }
+  renderSearchTable();
+}
+
 /* ===== Tabs ===== */
 function setTab(tab){
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===tab));
   document.getElementById("chartsView").style.display = (tab==="charts") ? "block" : "none";
   document.getElementById("tableView").style.display  = (tab==="table")  ? "block" : "none";
+  document.getElementById("searchView").style.display = (tab==="search") ? "block" : "none";
 }
 
+/* ===== Refresh ===== */
 function refreshAll(regen=false){
   updateRangeLabel();
   if(regen){
@@ -950,6 +1102,7 @@ function refreshAll(regen=false){
   buildKpis();
   buildCharts();
   buildTable();
+  // search tab stays as-is; results are tied to manual search click
 }
 
 /* ===== Init ===== */
@@ -983,11 +1136,18 @@ function refreshAll(regen=false){
     t.addEventListener("click", ()=> setTab(t.dataset.tab));
   });
 
-  document.getElementById("tableSearch").addEventListener("input", ()=> buildTable());
   document.getElementById("refreshBtn").addEventListener("click", ()=> refreshAll(true));
+
+  document.getElementById("orderIdBtn").addEventListener("click", onSearchClick);
+  document.getElementById("orderIdInput").addEventListener("keydown", (e)=>{
+    if(e.key === "Enter") onSearchClick();
+  });
 
   state.raw = generateMockRows();
   refreshAll(false);
+
+  // init empty search table header
+  renderSearchTable();
 })();
 </script>
 </body>
