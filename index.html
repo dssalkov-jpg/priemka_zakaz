@@ -20,7 +20,6 @@
     --shadow:0 8px 24px rgba(17,24,39,.08);
     --radius:16px;
     --good:#12b76a;
-    --bad:#ef4444;
   }
   *{box-sizing:border-box}
   body{
@@ -83,17 +82,8 @@
     box-shadow:0 2px 10px rgba(17,24,39,.04);
     min-height:44px;
   }
-  .control .main{
-    font-weight:800;
-    color:#111827;
-    white-space:nowrap;
-  }
-  .control .sub{
-    font-size:12px;
-    color:var(--muted);
-    margin-top:2px;
-    white-space:nowrap;
-  }
+  .control .main{ font-weight:800; color:#111827; white-space:nowrap; }
+  .control .sub{ font-size:12px; color:var(--muted); margin-top:2px; white-space:nowrap; }
   .control-col{ display:flex; flex-direction:column; line-height:1.1; }
   .control .caret{
     margin-left:8px;
@@ -124,9 +114,7 @@
     box-shadow:0 2px 10px rgba(17,24,39,.04);
     min-height:44px;
   }
-  .range-pill .range-title{
-    display:flex; flex-direction:column; line-height:1.1;
-  }
+  .range-pill .range-title{ display:flex; flex-direction:column; line-height:1.1; }
   .range-pill .range-title .main{ font-weight:900; }
   .range-pill .range-title .sub{ font-size:12px; color:var(--muted); margin-top:2px;}
   .range-pill input[type="date"]{
@@ -245,22 +233,12 @@
   }
 
   .chart-card{ padding:14px 14px 12px; }
-  .chart-title{
-    font-weight:950;
-    font-size:14px;
-    margin:0 0 10px;
-    color:#374151;
-  }
-  .chart-sub{
-    margin:0 0 10px;
-    font-size:12px;
-    color:var(--muted);
-    font-weight:800;
-  }
+  .chart-title{ font-weight:950; font-size:14px; margin:0 0 10px; color:#374151; }
+  .chart-sub{ margin:0 0 10px; font-size:12px; color:var(--muted); font-weight:800; }
   canvas{ width:100% !important; height:300px !important; }
 
   .table-wrap{ overflow:auto; border-radius:var(--radius); }
-  table{ width:100%; border-collapse:separate; border-spacing:0; min-width:1150px; }
+  table{ width:100%; border-collapse:separate; border-spacing:0; min-width:1180px; }
   thead th{
     position:sticky; top:0;
     background:#fff;
@@ -289,33 +267,29 @@
     position:sticky; bottom:0;
   }
   .right{ text-align:right; }
-  .table-controls{
-    display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-    margin:10px 0 12px;
-  }
-  .pill{
-    padding:8px 12px;
-    border-radius:999px;
-    border:1px solid var(--line);
-    background:#fff;
-    cursor:pointer;
-    font-weight:950;
-    color:#374151;
-  }
-  .pill.active{
-    background:var(--purpleSoft);
-    border-color:#e9ddff;
-    color:var(--purple);
+
+  /* New table header controls (search only) */
+  .table-header{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
   }
   .search{
-    margin-left:auto;
     background:#fff;
     border:1px solid var(--line);
-    border-radius:14px;
-    padding:10px 12px;
-    min-width:260px;
+    border-radius:16px;
+    padding:12px 14px;
+    min-width:420px;
     outline:none;
-    font-weight:800;
+    font-weight:900;
+    color:#111827;
+    box-shadow:0 2px 10px rgba(17,24,39,.04);
+  }
+  @media (max-width:720px){
+    .search{ min-width:100%; }
   }
 </style>
 </head>
@@ -454,22 +428,12 @@
 
   <div id="tableView" style="display:none;">
     <div class="card" style="padding:14px;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-        <div>
-          <div style="font-weight:950;font-size:14px;">Детализация</div>
-          <div style="font-size:12px;color:var(--muted);font-weight:700;margin-top:4px;">
-            Сортировка по клику на заголовок. Sticky header + итоговая строка.
-          </div>
-        </div>
-
-        <div class="table-controls">
-          <button class="pill active" data-mode="warehouse">по складам</button>
-          <button class="pill" data-mode="day">по периодам</button>
-          <input class="search" id="tableSearch" placeholder="Поиск по складу/дате..." />
-        </div>
+      <!-- Search moved here (replaces "Детализация" + subtext). Mode pills removed. -->
+      <div class="table-header">
+        <input class="search" id="tableSearch" placeholder="Поиск по складу/периоду..." />
       </div>
 
-      <div class="table-wrap" style="margin-top:10px;">
+      <div class="table-wrap">
         <table id="dataTable">
           <thead></thead>
           <tbody></tbody>
@@ -490,7 +454,6 @@ const WAREHOUSES = [
 const state = {
   raw: [],
   filtered: [],
-  mode: "warehouse",
   sort: { key: null, dir: "desc" },
   charts: {},
   selectedWarehouses: new Set(),
@@ -647,7 +610,6 @@ function generateMockRows(){
         orders,
         units,
         intercept_rate_orders: interceptRateOrders,
-        intercept_rate_units: interceptRateUnits,
         intercept_abs: interceptAbs,
         speed_hours: speedHours,
         touches_per_unit: touches,
@@ -689,13 +651,11 @@ function agg(rows){
   const interceptAbs = sum("intercept_abs");
 
   const interceptRateOrders = wavg("intercept_rate_orders","orders");
-  const interceptRateUnits  = wavg("intercept_rate_units","units");
-
   const speedHours = wavg("speed_hours","orders");
   const touchesPerUnit = wavg("touches_per_unit","units");
   const sortErrRate = wavg("sort_error_rate","units");
 
-  return { orders, units, interceptAbs, interceptRateOrders, interceptRateUnits, speedHours, touchesPerUnit, sortErrRate };
+  return { orders, units, interceptAbs, interceptRateOrders, speedHours, touchesPerUnit, sortErrRate };
 }
 
 /* ===== KPI deltas: positive 5%..30% ===== */
@@ -709,9 +669,7 @@ function ensureKpiDeltas(){
     "5. % ошибочных перемещений в тару сортировки"
   ];
   keys.forEach(k=>{
-    if(state.kpiDeltaPct[k] == null){
-      state.kpiDeltaPct[k] = rand(0.05, 0.30);
-    }
+    if(state.kpiDeltaPct[k] == null) state.kpiDeltaPct[k] = rand(0.05, 0.30);
   });
 }
 
@@ -724,7 +682,7 @@ function buildKpis(){
     { label:"1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)", value: fmtHours(cur.speedHours) },
     { label:"2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт", value: fmt1(cur.touchesPerUnit) },
     { label:"3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада", value: fmtPct(cur.interceptRateOrders) },
-    { label:"3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада", value: fmtPct(cur.interceptRateUnits) },
+    { label:"3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада", value: fmtPct(cur.units ? (cur.interceptAbs / cur.units) : 0) },
     { label:"4. абсолютное кол-во перехваченных заказов в рамках складов / компании", value: fmtNum(cur.interceptAbs) },
     { label:"5. % ошибочных перемещений в тару сортировки", value: fmtPct(cur.sortErrRate) }
   ];
@@ -743,7 +701,7 @@ function buildKpis(){
   });
 }
 
-/* ===== Charts ===== */
+/* ===== Charts (unchanged layout/behavior) ===== */
 function destroyChart(id){
   if(state.charts[id]){
     state.charts[id].destroy();
@@ -767,7 +725,6 @@ function buildCombinedChartsForScope(scopeKey, canvas12, canvas34, canvas5u){
       speed: a.speedHours,
       touches: a.touchesPerUnit,
       intRateOrders: a.interceptRateOrders,
-      intRateUnits: a.interceptRateUnits,
       intAbs: a.interceptAbs,
       sortErr: a.sortErrRate,
       units: a.units
@@ -811,8 +768,8 @@ function buildCombinedChartsForScope(scopeKey, canvas12, canvas34, canvas5u){
       labels,
       datasets:[
         { type:"line", label:"3.1 Доля от заказов", data: series.map(s=>+s.intRateOrders.toFixed(4)), borderColor: COLORS[2], backgroundColor: COLORS[2], tension:0.25, pointRadius:2.2, yAxisID:"y" },
-        { type:"line", label:"3.2 Доля от товаров", data: series.map(s=>+s.intRateUnits.toFixed(4)), borderColor: COLORS[3], backgroundColor: COLORS[3], tension:0.25, pointRadius:2.2, yAxisID:"y" },
-        { type:"bar",  label:"4. Перехвачено, заказов", data: series.map(s=>s.intAbs), borderColor: COLORS[0], backgroundColor:"rgba(37, 99, 235, 0.18)", yAxisID:"y1" }
+        { type:"bar",  label:"4. Перехвачено, заказов", data: series.map(s=>s.intAbs), borderColor: COLORS[0], backgroundColor:"rgba(37, 99, 235, 0.18)", yAxisID:"y1" },
+        { type:"line", label:"3.2 Доля от товаров", data: series.map(s=> (s.units ? +(s.intAbs/s.units).toFixed(4) : 0)), borderColor: COLORS[3], backgroundColor: COLORS[3], tension:0.25, pointRadius:2.2, yAxisID:"y" }
       ]
     },
     options:{
@@ -851,68 +808,49 @@ function buildCharts(){
   buildCombinedChartsForScope("Казань", "c_kazan_12", "c_kazan_34", "c_kazan_5u");
 }
 
-/* ===== Table ===== */
+/* ===== TABLE (updated columns + no mode pills) ===== */
 function buildTable(){
   const table = document.getElementById("dataTable");
   const thead = table.querySelector("thead");
   const tbody = table.querySelector("tbody");
   const tfoot = table.querySelector("tfoot");
 
-  let rows = [];
-  if(state.mode==="warehouse"){
-    const g = groupBy(state.filtered, r=>r.warehouse);
-    rows = Array.from(g.entries()).map(([wh, items])=>{
-      const a = agg(items);
-      return {
-        key: wh,
-        "Склад": wh,
-        "Заказы (шт)": a.orders,
-        "Товары на приемке (шт)": a.units,
-        "4. абсолютное кол-во перехваченных заказов в рамках складов / компании": a.interceptAbs,
-        "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада": a.interceptRateOrders,
-        "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада": a.interceptRateUnits,
-        "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)": a.speedHours,
-        "2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт": a.touchesPerUnit,
-        "5. % ошибочных перемещений в тару сортировки": a.sortErrRate
-      };
-    });
-  } else {
-    const g = groupBy(state.filtered, r=>r.date);
-    rows = Array.from(g.entries()).sort((a,b)=>a[0].localeCompare(b[0])).map(([day, items])=>{
-      const a = agg(items);
-      return {
-        key: day,
-        "Период": day,
-        "Заказы (шт)": a.orders,
-        "Товары на приемке (шт)": a.units,
-        "4. абсолютное кол-во перехваченных заказов в рамках складов / компании": a.interceptAbs,
-        "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада": a.interceptRateOrders,
-        "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада": a.interceptRateUnits,
-        "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)": a.speedHours,
-        "2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт": a.touchesPerUnit,
-        "5. % ошибочных перемещений в тару сортировки": a.sortErrRate
-      };
-    });
-  }
+  // Build rows per (Склад, Период) as requested
+  const g = groupBy(state.filtered, r => `${r.warehouse}||${r.date}`);
+  let rows = Array.from(g.entries()).map(([k, items])=>{
+    const [warehouse, period] = k.split("||");
+    const a = agg(items);
 
+    return {
+      "Склад": warehouse,
+      "Период": period,
+      "Кол-во товаров на приемке - шт.": a.units,
+      "Кол-во перехваченных заказов на приемке - шт.": a.interceptAbs,
+      "Кол-во перехваченных заказов на приемке - %": a.interceptRateOrders,
+      "Ср. скорость отгрузки заказа": a.speedHours,
+      "Ср. кол-во касаний на товар": a.touchesPerUnit,
+      "% ошибочных перемещений в тару сортировки": a.sortErrRate
+    };
+  });
+
+  // Search (warehouse/period + any fields)
   const q = (document.getElementById("tableSearch").value||"").trim().toLowerCase();
   if(q){
     rows = rows.filter(r => Object.values(r).some(v=>String(v).toLowerCase().includes(q)));
   }
 
-  const dimCol = (state.mode==="warehouse") ? "Склад" : "Период";
   const cols = [
-    dimCol,
-    "Заказы (шт)",
-    "Товары на приемке (шт)",
-    "4. абсолютное кол-во перехваченных заказов в рамках складов / компании",
-    "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада",
-    "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада",
-    "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)",
-    "2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт",
-    "5. % ошибочных перемещений в тару сортировки"
+    "Склад",
+    "Период",
+    "Кол-во товаров на приемке - шт.",
+    "Кол-во перехваченных заказов на приемке - шт.",
+    "Кол-во перехваченных заказов на приемке - %",
+    "Ср. скорость отгрузки заказа",
+    "Ср. кол-во касаний на товар",
+    "% ошибочных перемещений в тару сортировки"
   ];
 
+  // Sorting
   if(state.sort.key){
     const k = state.sort.key;
     const dir = state.sort.dir==="asc" ? 1 : -1;
@@ -921,6 +859,9 @@ function buildTable(){
       if(typeof av === "number" && typeof bv === "number") return (av-bv)*dir;
       return String(av).localeCompare(String(bv))*dir;
     });
+  } else {
+    // default sort: warehouse then period
+    rows.sort((a,b)=> (a["Склад"].localeCompare(b["Склад"]) || a["Период"].localeCompare(b["Период"])));
   }
 
   thead.innerHTML = "<tr>" + cols.map(c=>`<th data-col="${c}">${c}</th>`).join("") + "</tr>";
@@ -930,34 +871,40 @@ function buildTable(){
       const v = r[c];
       const isNum = typeof v === "number";
       let out = v;
-      if(c.startsWith("3. %") || c.startsWith("5. %")) out = fmtPct(v);
-      else if(c.startsWith("1. ")) out = fmtHours(v);
-      else if(c.startsWith("2. ")) out = fmt1(v);
+
+      if(c.endsWith("- %") || c.startsWith("% ")) out = fmtPct(v);
+      else if(c.startsWith("Ср. скорость")) out = fmtHours(v);
+      else if(c.startsWith("Ср. кол-во")) out = fmt1(v);
       else if(isNum) out = fmtNum(Math.round(v));
+
       return `<td class="${isNum ? "right" : ""}">${out}</td>`;
     }).join("") + "</tr>";
   }).join("");
 
+  // Totals across filtered
   const total = agg(state.filtered);
-  const totalRow = {};
-  totalRow[dimCol] = "Итого";
-  totalRow["Заказы (шт)"] = total.orders;
-  totalRow["Товары на приемке (шт)"] = total.units;
-  totalRow["4. абсолютное кол-во перехваченных заказов в рамках складов / компании"] = total.interceptAbs;
-  totalRow["3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада"] = total.interceptRateOrders;
-  totalRow["3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада"] = total.interceptRateUnits;
-  totalRow["1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)"] = total.speedHours;
-  totalRow["2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт"] = total.touchesPerUnit;
-  totalRow["5. % ошибочных перемещений в тару сортировки"] = total.sortErrRate;
+  const totalsRow = {
+    "Склад": "Итого",
+    "Период": "—",
+    "Кол-во товаров на приемке - шт.": total.units,
+    "Кол-во перехваченных заказов на приемке - шт.": total.interceptAbs,
+    "Кол-во перехваченных заказов на приемке - %": total.interceptRateOrders,
+    "Ср. скорость отгрузки заказа": total.speedHours,
+    "Ср. кол-во касаний на товар": total.touchesPerUnit,
+    "% ошибочных перемещений в тару сортировки": total.sortErrRate
+  };
 
   tfoot.innerHTML = "<tr>" + cols.map(c=>{
-    const v = totalRow[c];
+    const v = totalsRow[c];
+    const isNum = typeof v === "number";
     let out = v;
-    if(c.startsWith("3. %") || c.startsWith("5. %")) out = fmtPct(v);
-    else if(c.startsWith("1. ")) out = fmtHours(v);
-    else if(c.startsWith("2. ")) out = fmt1(v);
-    else if(typeof v === "number") out = fmtNum(Math.round(v));
-    return `<td class="${typeof v === "number" ? "right" : ""}">${out}</td>`;
+
+    if(c.endsWith("- %") || c.startsWith("% ")) out = fmtPct(v);
+    else if(c.startsWith("Ср. скорость")) out = fmtHours(v);
+    else if(c.startsWith("Ср. кол-во")) out = fmt1(v);
+    else if(isNum) out = fmtNum(Math.round(v));
+
+    return `<td class="${isNum ? "right" : ""}">${out}</td>`;
   }).join("") + "</tr>";
 
   thead.querySelectorAll("th").forEach(th=>{
@@ -974,16 +921,11 @@ function buildTable(){
   });
 }
 
-/* ===== UI ===== */
+/* ===== Tabs ===== */
 function setTab(tab){
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===tab));
   document.getElementById("chartsView").style.display = (tab==="charts") ? "block" : "none";
   document.getElementById("tableView").style.display  = (tab==="table")  ? "block" : "none";
-}
-function setMode(mode){
-  state.mode = mode;
-  document.querySelectorAll(".pill").forEach(p=>p.classList.toggle("active", p.dataset.mode===mode));
-  buildTable();
 }
 
 function refreshAll(regen=false){
@@ -1028,10 +970,6 @@ function refreshAll(regen=false){
 
   document.querySelectorAll(".tab").forEach(t=>{
     t.addEventListener("click", ()=> setTab(t.dataset.tab));
-  });
-
-  document.querySelectorAll(".pill").forEach(p=>{
-    p.addEventListener("click", ()=> setMode(p.dataset.mode));
   });
 
   document.getElementById("tableSearch").addEventListener("input", ()=> buildTable());
