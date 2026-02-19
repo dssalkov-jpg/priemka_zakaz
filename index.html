@@ -41,7 +41,7 @@
     padding:14px 16px;
     display:flex;
     align-items:center;
-    justify-content:space-between;
+    justify-content:center;
     gap:12px;
   }
   .title{
@@ -102,52 +102,6 @@
     cursor:pointer;
     flex:0 0 auto;
   }
-
-  /* Header warehouse control */
-  .whHeaderWrap{ position:relative; flex:0 0 auto; }
-  .whHeaderLabel{
-    font-size:12px;
-    font-weight:900;
-    opacity:.95;
-    margin-bottom:6px;
-  }
-  .whHeaderControl{
-    border:none;
-    box-shadow:0 10px 24px rgba(0,0,0,.18);
-    background:rgba(255,255,255,.96);
-  }
-  .whHeaderControl .main{ color:#111827; }
-  .whHeaderControl .sub{ color:#6b7280; }
-  .whHeaderControl .caret,
-  .whHeaderControl .clear{
-    background:#f3f4f6;
-  }
-  .menu{
-    position:absolute;
-    top:52px; left:0;
-    width:340px;
-    max-height:340px;
-    overflow:auto;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:14px;
-    box-shadow:var(--shadow);
-    display:none;
-    z-index:60;
-    padding:8px;
-  }
-  .menu.open{ display:block; }
-  .menu .row{
-    display:flex; align-items:center; gap:10px;
-    padding:10px 10px;
-    border-radius:12px;
-    cursor:pointer;
-  }
-  .menu .row:hover{ background:#fafafa; }
-  .menu input{ width:16px; height:16px; }
-  .menu .row .name{ font-weight:800; }
-  .menu .row .hint{ font-size:12px; color:var(--muted); margin-left:auto; }
-
   .daterange{
     display:flex; align-items:center; gap:10px; flex-wrap:wrap;
   }
@@ -184,6 +138,33 @@
   }
   .btn:active{ transform:translateY(1px); }
 
+  .dropdown{ position:relative; }
+  .menu{
+    position:absolute;
+    top:52px; left:0;
+    width:340px;
+    max-height:340px;
+    overflow:auto;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    display:none;
+    z-index:60;
+    padding:8px;
+  }
+  .menu.open{ display:block; }
+  .menu .row{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 10px;
+    border-radius:12px;
+    cursor:pointer;
+  }
+  .menu .row:hover{ background:#fafafa; }
+  .menu input{ width:16px; height:16px; }
+  .menu .row .name{ font-weight:800; }
+  .menu .row .hint{ font-size:12px; color:var(--muted); margin-left:auto; }
+
   .container{ max-width:1200px; margin:0 auto; padding:18px 16px 26px; }
 
   .tabs{
@@ -219,9 +200,6 @@
   @media (max-width:900px){
     .kpi-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
     .btn{ margin-left:0; }
-    .whHeaderWrap{ width:100%; }
-    .whHeaderControl{ width:100%; }
-    .menu{ width:100%; }
   }
   @media (max-width:560px){
     .kpi-grid{ grid-template-columns:1fr; }
@@ -339,14 +317,16 @@
 <body>
 <header>
   <div class="topbar">
-    <div style="width:1px;"></div>
-
     <div class="title">Заказ на приемке</div>
+  </div>
+</header>
 
-    <!-- Header: Warehouses multiselect -->
-    <div class="whHeaderWrap">
-      <div class="whHeaderLabel">Склад (выбрано: <span id="whCount">0</span>) *</div>
-      <div class="control whHeaderControl" id="whControl" style="cursor:pointer; min-width:340px;">
+<div class="filtersbar">
+  <div class="filters">
+    <!-- ✅ вернули фильтр по складам на прежнее место -->
+    <div class="fgroup dropdown" style="min-width:340px;">
+      <div class="flabel">Склад (выбрано: <span id="whCount">0</span>) *</div>
+      <div class="control" id="whControl" style="cursor:pointer;">
         <div class="control-col">
           <div class="main" id="whMain">Выбраны все</div>
           <div class="sub">Мультивыбор</div>
@@ -357,12 +337,8 @@
       </div>
       <div class="menu" id="whMenu"></div>
     </div>
-  </div>
-</header>
 
-<div class="filtersbar">
-  <div class="filters">
-    <!-- оставили только период -->
+    <!-- оставили период -->
     <div class="fgroup" style="min-width:420px; flex:1 1 auto;">
       <div class="flabel">Период *</div>
       <div class="daterange">
@@ -473,7 +449,7 @@
     </div>
   </div>
 
-  <!-- TABLE tab: only the table (removed search box) -->
+  <!-- TABLE tab: only the table -->
   <div id="tableView" style="display:none;">
     <div class="card" style="padding:14px;">
       <div class="table-wrap">
@@ -486,14 +462,14 @@
     </div>
   </div>
 
-  <!-- NEW: Search by Order ID tab -->
+  <!-- Search by Order ID tab -->
   <div id="searchView" style="display:none;">
     <div class="card" style="padding:14px;">
       <div class="searchbar">
         <div class="search-group">
           <div class="search-label">поиск по id заказа</div>
           <input class="search" id="orderIdInput" placeholder="Введите ID заказа (5 цифр)..." inputmode="numeric" />
-          <div class="hint">Для теста: введите 5 цифр и нажмите «Искать» — появятся тестовые результаты.</div>
+          <div class="hint">Для теста: введите 5 цифр и нажмите «Искать» — появится 1 тестовый результат.</div>
         </div>
         <button class="btn-secondary" id="orderIdBtn">Искать</button>
       </div>
@@ -522,7 +498,7 @@ const state = {
   charts: {},
   selectedWarehouses: new Set(),
   kpiDeltaPct: {},
-  searchRows: [] // NEW: results for "Поиск по ID заказа"
+  searchRows: []
 };
 
 function rand(min, max){ return Math.random()*(max-min)+min; }
@@ -562,7 +538,7 @@ function updateRangeLabel(){
   document.getElementById("rangeLabel").textContent = `${prettyRuDate(from)} — ${prettyRuDate(to)}`;
 }
 
-/* ===== Custom multiselect (moved to header) ===== */
+/* ===== Custom multiselect ===== */
 function buildWarehouseMenu(){
   const menu = document.getElementById("whMenu");
   menu.innerHTML = "";
@@ -728,7 +704,7 @@ function agg(rows){
   return { orders, units, interceptAbs, interceptRateOrders, speedHours, touchesPerUnit, sortErrRate };
 }
 
-/* ===== KPI deltas: positive 5%..30% ===== */
+/* ===== KPI deltas ===== */
 function ensureKpiDeltas(){
   const keys = [
     "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)",
@@ -979,66 +955,54 @@ function buildTable(){
   });
 }
 
-/* ===== NEW: Search-by-order-id tab (mock results) ===== */
+/* ===== Search-by-order-id tab (single result) ===== */
 function pad2(n){ return String(n).padStart(2,"0"); }
-function fmtDateRu(d){
-  return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`;
-}
-function fmtTimeRu(d){
-  return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-}
+function fmtDateRu(d){ return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`; }
+function fmtTimeRu(d){ return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`; }
 function seededRand(seed){
-  // simple deterministic rng [0,1)
   let x = seed >>> 0;
   x ^= x << 13; x >>>= 0;
   x ^= x >> 17; x >>>= 0;
   x ^= x << 5;  x >>>= 0;
   return (x % 10000) / 10000;
 }
-function buildSearchResults(orderId5){
-  // Use selected warehouses; if none selected, fallback to all
+function buildSearchResult(orderId5){
   const whList = Array.from(state.selectedWarehouses.size ? state.selectedWarehouses : new Set(WAREHOUSES)).sort();
-
   const seed = Math.abs(hashCode(String(orderId5)));
   const baseDay = new Date(getDateRange().to + "T00:00:00");
 
-  const rowsCount = 6;
-  const rows = [];
-  for(let i=0;i<rowsCount;i++){
-    const r0 = seededRand(seed + i*101);
-    const r1 = seededRand(seed + i*101 + 7);
-    const r2 = seededRand(seed + i*101 + 13);
+  const r0 = seededRand(seed + 101);
+  const r1 = seededRand(seed + 108);
+  const r2 = seededRand(seed + 114);
 
-    const wh = whList[Math.floor(r0 * whList.length)] || "Коледино";
+  const wh = whList[Math.floor(r0 * whList.length)] || "Коледино";
 
-    const orderDt = new Date(baseDay);
-    orderDt.setDate(orderDt.getDate() - (1 + Math.floor(r1 * 10)));
-    orderDt.setHours(8 + Math.floor(r2 * 10), Math.floor(r1 * 60), Math.floor(r0 * 60));
+  const orderDt = new Date(baseDay);
+  orderDt.setDate(orderDt.getDate() - (1 + Math.floor(r1 * 10)));
+  orderDt.setHours(8 + Math.floor(r2 * 10), Math.floor(r1 * 60), Math.floor(r0 * 60));
 
-    const arrivalDt = new Date(orderDt);
-    arrivalDt.setHours(arrivalDt.getHours() + (3 + Math.floor(r0 * 10)));
-    arrivalDt.setMinutes(arrivalDt.getMinutes() + (10 + Math.floor(r2 * 40)));
+  const arrivalDt = new Date(orderDt);
+  arrivalDt.setHours(arrivalDt.getHours() + (3 + Math.floor(r0 * 10)));
+  arrivalDt.setMinutes(arrivalDt.getMinutes() + (10 + Math.floor(r2 * 40)));
 
-    const shipDt = new Date(arrivalDt);
-    shipDt.setHours(shipDt.getHours() + (6 + Math.floor(r1 * 12)));
-    shipDt.setMinutes(shipDt.getMinutes() + Math.floor(r0 * 50));
+  const shipDt = new Date(arrivalDt);
+  shipDt.setHours(shipDt.getHours() + (6 + Math.floor(r1 * 12)));
+  shipDt.setMinutes(shipDt.getMinutes() + Math.floor(r0 * 50));
 
-    const tableNo = 1 + Math.floor(r2 * 30);
-    const empNo = 1000 + Math.floor(r1 * 9000);
+  const tableNo = 1 + Math.floor(r2 * 30);
+  const empNo = 1000 + Math.floor(r1 * 9000);
 
-    rows.push({
-      "Склад": wh,
-      "ID заказа": String(orderId5),
-      "Дата заказа": fmtDateRu(orderDt),
-      "Время заказ": fmtTimeRu(orderDt),
-      "Дата поступления товара на стол приемки": fmtDateRu(arrivalDt),
-      "Время поступления товара на стол приемки": fmtTimeRu(arrivalDt),
-      "№ Стола приемки": String(tableNo),
-      "№ Сотрудника на столе приемки": String(empNo),
-      "Время отгрузки заказа": fmtTimeRu(shipDt)
-    });
-  }
-  return rows;
+  return [{
+    "Склад": wh,
+    "ID заказа": String(orderId5),
+    "Дата заказа": fmtDateRu(orderDt),
+    "Время заказ": fmtTimeRu(orderDt),
+    "Дата поступления товара на стол приемки": fmtDateRu(arrivalDt),
+    "Время поступления товара на стол приемки": fmtTimeRu(arrivalDt),
+    "№ Стола приемки": String(tableNo),
+    "№ Сотрудника на столе приемки": String(empNo),
+    "Время отгрузки заказа": fmtTimeRu(shipDt)
+  }];
 }
 
 function renderSearchTable(){
@@ -1061,23 +1025,21 @@ function renderSearchTable(){
   thead.innerHTML = "<tr>" + cols.map(c=>`<th>${c}</th>`).join("") + "</tr>";
 
   if(!state.searchRows || state.searchRows.length === 0){
-    tbody.innerHTML = ""; // пусто, пока не искали
+    tbody.innerHTML = "";
     return;
   }
 
   tbody.innerHTML = state.searchRows.map(r=>{
-    return "<tr>" + cols.map(c=>{
-      return `<td>${r[c] ?? ""}</td>`;
-    }).join("") + "</tr>";
+    return "<tr>" + cols.map(c=>`<td>${r[c] ?? ""}</td>`).join("") + "</tr>";
   }).join("");
 }
 
 function onSearchClick(){
   const v = (document.getElementById("orderIdInput").value || "").trim();
   if(/^\d{5}$/.test(v)){
-    state.searchRows = buildSearchResults(v);
+    state.searchRows = buildSearchResult(v); // ✅ всегда 1 строка
   } else {
-    state.searchRows = []; // неверный формат -> пусто
+    state.searchRows = [];
   }
   renderSearchTable();
 }
@@ -1090,7 +1052,6 @@ function setTab(tab){
   document.getElementById("searchView").style.display = (tab==="search") ? "block" : "none";
 }
 
-/* ===== Refresh ===== */
 function refreshAll(regen=false){
   updateRangeLabel();
   if(regen){
@@ -1102,7 +1063,6 @@ function refreshAll(regen=false){
   buildKpis();
   buildCharts();
   buildTable();
-  // search tab stays as-is; results are tied to manual search click
 }
 
 /* ===== Init ===== */
@@ -1116,7 +1076,9 @@ function refreshAll(regen=false){
   updateWarehouseControl();
   updateRangeLabel();
 
+  // ✅ фикс кликабельности: стопаем всплытие, чтобы document.click не закрывал меню сразу
   document.getElementById("whControl").addEventListener("click", (e)=>{
+    e.stopPropagation();
     if(e.target && e.target.id === "whClear") return;
     toggleWarehouseMenu();
   });
@@ -1146,7 +1108,6 @@ function refreshAll(regen=false){
   state.raw = generateMockRows();
   refreshAll(false);
 
-  // init empty search table header
   renderSearchTable();
 })();
 </script>
