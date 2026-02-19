@@ -268,14 +268,20 @@
   }
   .right{ text-align:right; }
 
-  /* New table header controls (search only) */
+  /* Table search (left aligned + labeled) */
   .table-header{
     display:flex;
-    align-items:center;
-    justify-content:flex-end;
+    align-items:flex-end;
+    justify-content:flex-start; /* ⬅ left */
     gap:12px;
     flex-wrap:wrap;
     margin-bottom:12px;
+  }
+  .search-group{ display:flex; flex-direction:column; gap:6px; }
+  .search-label{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:900;
   }
   .search{
     background:#fff;
@@ -428,9 +434,11 @@
 
   <div id="tableView" style="display:none;">
     <div class="card" style="padding:14px;">
-      <!-- Search moved here (replaces "Детализация" + subtext). Mode pills removed. -->
       <div class="table-header">
-        <input class="search" id="tableSearch" placeholder="Поиск по складу/периоду..." />
+        <div class="search-group">
+          <div class="search-label">поиск по id заказа</div>
+          <input class="search" id="tableSearch" placeholder="Введите ID заказа..." />
+        </div>
       </div>
 
       <div class="table-wrap">
@@ -569,6 +577,12 @@ function hashCode(str){
   return h;
 }
 
+function makeOrderId(wh, date){
+  // deterministic-ish but still looks like an ID
+  const base = Math.abs(hashCode(wh + "|" + date));
+  return String(1000000000 + (base % 9000000000));
+}
+
 function generateMockRows(){
   const {from, to} = getDateRange();
   const start = new Date(from);
@@ -594,7 +608,6 @@ function generateMockRows(){
 
       const interceptRateOrders = clamp(rand(0.018, 0.085) + (whFactor-1)*0.012, 0.01, 0.14);
       const interceptAbs = Math.round(orders * interceptRateOrders);
-      const interceptRateUnits = clamp(interceptRateOrders * rand(0.85, 1.20), 0.01, 0.16);
 
       const dayIndex = Math.round((d - start)/(24*3600*1000));
       const trend = -0.015 * dayIndex;
@@ -604,9 +617,11 @@ function generateMockRows(){
 
       const sortErrRate = clamp(rand(0.002, 0.020) + (whFactor-1)*0.002 + (dow===1?0.001:0), 0.001, 0.03);
 
+      const date = dateKey(d);
       rows.push({
-        date: dateKey(d),
+        date,
         warehouse: wh,
+        order_id: makeOrderId(wh, date),
         orders,
         units,
         intercept_rate_orders: interceptRateOrders,
@@ -649,7 +664,6 @@ function agg(rows){
   const orders = sum("orders");
   const units  = sum("units");
   const interceptAbs = sum("intercept_abs");
-
   const interceptRateOrders = wavg("intercept_rate_orders","orders");
   const speedHours = wavg("speed_hours","orders");
   const touchesPerUnit = wavg("touches_per_unit","units");
@@ -701,14 +715,13 @@ function buildKpis(){
   });
 }
 
-/* ===== Charts (unchanged layout/behavior) ===== */
+/* ===== Charts (unchanged) ===== */
 function destroyChart(id){
   if(state.charts[id]){
     state.charts[id].destroy();
     delete state.charts[id];
   }
 }
-
 const COLORS = ["#2563eb","#7c3aed","#10b981","#f59e0b","#ef4444","#06b6d4"];
 
 function buildCombinedChartsForScope(scopeKey, canvas12, canvas34, canvas5u){
@@ -808,35 +821,36 @@ function buildCharts(){
   buildCombinedChartsForScope("Казань", "c_kazan_12", "c_kazan_34", "c_kazan_5u");
 }
 
-/* ===== TABLE (updated columns + no mode pills) ===== */
+/* ===== TABLE: aggregated per warehouse for selected period ===== */
 function buildTable(){
   const table = document.getElementById("dataTable");
   const thead = table.querySelector("thead");
   const tbody = table.querySelector("tbody");
   const tfoot = table.querySelector("tfoot");
 
-  // Build rows per (Склад, Период) as requested
-  const g = groupBy(state.filtered, r => `${r.warehouse}||${r.date}`);
-  let rows = Array.from(g.entries()).map(([k, items])=>{
-    const [warehouse, period] = k.split("||");
-    const a = agg(items);
+  // 1 row per warehouse (aggregated within selected period)
+  const g = groupBy(state.filtered, r => r.warehouse);
 
+  let rows = Array.from(g.entries()).map(([warehouse, items])=>{
+    const a = agg(items);
     return {
       "Склад": warehouse,
-      "Период": period,
+      "Период": `${getDateRange().from} — ${getDateRange().to}`,
       "Кол-во товаров на приемке - шт.": a.units,
       "Кол-во перехваченных заказов на приемке - шт.": a.interceptAbs,
       "Кол-во перехваченных заказов на приемке - %": a.interceptRateOrders,
       "Ср. скорость отгрузки заказа": a.speedHours,
       "Ср. кол-во касаний на товар": a.touchesPerUnit,
-      "% ошибочных перемещений в тару сортировки": a.sortErrRate
+      "% ошибочных перемещений в тару сортировки": a.sortErrRate,
+      "__order_id": (items[0] ? items[0].order_id : "")
     };
   });
 
-  // Search (warehouse/period + any fields)
+  // "Поиск по id заказа" — demo behavior:
+  // filter warehouses whose synthetic order_id contains the query
   const q = (document.getElementById("tableSearch").value||"").trim().toLowerCase();
   if(q){
-    rows = rows.filter(r => Object.values(r).some(v=>String(v).toLowerCase().includes(q)));
+    rows = rows.filter(r => String(r["__order_id"]).toLowerCase().includes(q));
   }
 
   const cols = [
@@ -850,7 +864,6 @@ function buildTable(){
     "% ошибочных перемещений в тару сортировки"
   ];
 
-  // Sorting
   if(state.sort.key){
     const k = state.sort.key;
     const dir = state.sort.dir==="asc" ? 1 : -1;
@@ -860,8 +873,7 @@ function buildTable(){
       return String(av).localeCompare(String(bv))*dir;
     });
   } else {
-    // default sort: warehouse then period
-    rows.sort((a,b)=> (a["Склад"].localeCompare(b["Склад"]) || a["Период"].localeCompare(b["Период"])));
+    rows.sort((a,b)=> a["Склад"].localeCompare(b["Склад"]));
   }
 
   thead.innerHTML = "<tr>" + cols.map(c=>`<th data-col="${c}">${c}</th>`).join("") + "</tr>";
@@ -881,11 +893,10 @@ function buildTable(){
     }).join("") + "</tr>";
   }).join("");
 
-  // Totals across filtered
   const total = agg(state.filtered);
   const totalsRow = {
-    "Склад": "Итого",
-    "Период": "—",
+    "Склад":"Итого",
+    "Период":`${getDateRange().from} — ${getDateRange().to}`,
     "Кол-во товаров на приемке - шт.": total.units,
     "Кол-во перехваченных заказов на приемке - шт.": total.interceptAbs,
     "Кол-во перехваченных заказов на приемке - %": total.interceptRateOrders,
