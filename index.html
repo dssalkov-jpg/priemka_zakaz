@@ -141,13 +141,6 @@
     cursor:pointer;
     flex:0 0 auto;
   }
-  .control input[type="date"]{
-    border:none;
-    outline:none;
-    font-weight:800;
-    color:#111827;
-    background:transparent;
-  }
   .daterange{
     display:flex; align-items:center; gap:10px; flex-wrap:wrap;
   }
@@ -165,6 +158,13 @@
   }
   .range-pill .range-title .main{ font-weight:900; }
   .range-pill .range-title .sub{ font-size:12px; color:var(--muted); margin-top:2px;}
+  .range-pill input[type="date"]{
+    border:none;
+    outline:none;
+    font-weight:800;
+    color:#111827;
+    background:transparent;
+  }
   .btn{
     margin-left:auto;
     background:linear-gradient(90deg,#7c3aed,#8b5cf6);
@@ -183,8 +183,8 @@
   .menu{
     position:absolute;
     top:52px; left:0;
-    width:320px;
-    max-height:320px;
+    width:340px;
+    max-height:340px;
     overflow:auto;
     background:#fff;
     border:1px solid var(--line);
@@ -259,7 +259,6 @@
   .kpi .klabel{ font-size:12px; color:var(--muted); font-weight:900; line-height:1.25; }
   .kpi .kvalue{ font-size:34px; font-weight:950; letter-spacing:.2px; }
   .kpi .kdelta{ font-size:14px; font-weight:950; color:var(--good); }
-  .kpi .kdelta.neg{ color:var(--bad); }
 
   .lane{ margin-top:12px; }
   .lane-title{
@@ -368,6 +367,7 @@
   <div class="filters">
     <div class="fgroup dropdown" style="min-width:340px;">
       <div class="flabel">Склад (выбрано: <span id="whCount">0</span>) *</div>
+      <!-- clickable control to open dropdown -->
       <div class="control" id="whControl" style="cursor:pointer;">
         <div class="control-col">
           <div class="main" id="whMain">Выбраны все</div>
@@ -410,32 +410,84 @@
   <div class="kpi-grid" id="kpiGrid"></div>
 
   <div id="chartsView">
+    <!-- Company -->
     <div class="lane">
       <div class="lane-title">Сводная по всем складам</div>
 
-      <!-- Combined chart 1+2 -->
       <div class="card chart-card">
         <div class="chart-title">1–2. Скорость отгрузки + касания на товар</div>
         <div class="chart-sub">Две линии (легенда кликабельна: скрывает/показывает серию)</div>
-        <canvas id="c_comb_12"></canvas>
+        <canvas id="c_company_12"></canvas>
       </div>
 
       <div style="height:12px"></div>
 
-      <!-- Combined chart 3.1 + 3.2 + 4 -->
       <div class="card chart-card">
         <div class="chart-title">3–4. % перехвата (от заказов / от товаров) + абсолют перехваченных заказов</div>
         <div class="chart-sub">Три серии (легенда кликабельна: скрывает/показывает серию)</div>
-        <canvas id="c_comb_3_4"></canvas>
+        <canvas id="c_company_34"></canvas>
       </div>
 
       <div style="height:12px"></div>
 
-      <!-- Combined chart 5 + Context -->
       <div class="card chart-card">
         <div class="chart-title">5. % ошибочных перемещений + поток товаров на приемке (шт)</div>
         <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
-        <canvas id="c_comb_5_units"></canvas>
+        <canvas id="c_company_5u"></canvas>
+      </div>
+    </div>
+
+    <!-- Koledino -->
+    <div class="lane">
+      <div class="lane-title">Коледино</div>
+
+      <div class="card chart-card">
+        <div class="chart-title">1–2. Скорость отгрузки + касания на товар</div>
+        <div class="chart-sub">Две линии (легенда кликабельна: скрывает/показывает серию)</div>
+        <canvas id="c_koledino_12"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">3–4. % перехвата (от заказов / от товаров) + абсолют перехваченных заказов</div>
+        <div class="chart-sub">Три серии (легенда кликабельна: скрывает/показывает серию)</div>
+        <canvas id="c_koledino_34"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">5. % ошибочных перемещений + поток товаров на приемке (шт)</div>
+        <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
+        <canvas id="c_koledino_5u"></canvas>
+      </div>
+    </div>
+
+    <!-- Kazan -->
+    <div class="lane">
+      <div class="lane-title">Казань</div>
+
+      <div class="card chart-card">
+        <div class="chart-title">1–2. Скорость отгрузки + касания на товар</div>
+        <div class="chart-sub">Две линии (легенда кликабельна: скрывает/показывает серию)</div>
+        <canvas id="c_kazan_12"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">3–4. % перехвата (от заказов / от товаров) + абсолют перехваченных заказов</div>
+        <div class="chart-sub">Три серии (легенда кликабельна: скрывает/показывает серию)</div>
+        <canvas id="c_kazan_34"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">5. % ошибочных перемещений + поток товаров на приемке (шт)</div>
+        <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
+        <canvas id="c_kazan_5u"></canvas>
       </div>
     </div>
   </div>
@@ -469,13 +521,26 @@
 </div>
 
 <script>
+/* =========================
+   Warehouses (expanded with cities examples)
+   ========================= */
 const WAREHOUSES = [
-  "DE-Berlin-01",
-  "DE-Leipzig-02",
-  "DE-Frankfurt-03",
-  "DE-Munich-04",
-  "PL-Poznan-01",
-  "CZ-Prague-01"
+  "Коледино",
+  "Казань",
+  "Челябинск",
+  "Екатеринбург",
+  "Новосибирск",
+  "Краснодар",
+  "Санкт-Петербург",
+  "Ростов-на-Дону",
+  "Нижний Новгород",
+  "Самара",
+  "Тула",
+  "Воронеж",
+  "Уфа",
+  "Пермь",
+  "Омск",
+  "Красноярск"
 ];
 
 const state = {
@@ -485,7 +550,7 @@ const state = {
   sort: { key: null, dir: "desc" },
   charts: {},
   selectedWarehouses: new Set(),
-  kpiDeltaPct: {} // per KPI label: positive small deltas 5%..30%
+  kpiDeltaPct: {}
 };
 
 function rand(min, max){ return Math.random()*(max-min)+min; }
@@ -525,7 +590,7 @@ function updateRangeLabel(){
   document.getElementById("rangeLabel").textContent = `${prettyRuDate(from)} — ${prettyRuDate(to)}`;
 }
 
-/* ===== Custom multiselect ===== */
+/* ===== Custom multiselect (openable dropdown) ===== */
 function buildWarehouseMenu(){
   const menu = document.getElementById("whMenu");
   menu.innerHTML = "";
@@ -599,26 +664,28 @@ function generateMockRows(){
     const weekendFactor = (dow===0 || dow===6) ? 0.72 : 1.0;
 
     WAREHOUSES.forEach(wh=>{
+      // per-warehouse factor so Koledino/Kazan look different too
       const whFactor =
-        wh.includes("Berlin") ? 1.15 :
-        wh.includes("Leipzig") ? 1.05 :
-        wh.includes("Frankfurt") ? 1.10 :
-        wh.includes("Munich") ? 0.90 :
-        wh.includes("Poznan") ? 0.95 : 0.88;
+        wh === "Коледино" ? 1.25 :
+        wh === "Казань" ? 1.05 :
+        wh === "Челябинск" ? 0.95 :
+        wh === "Санкт-Петербург" ? 1.10 :
+        wh === "Новосибирск" ? 0.92 :
+        0.90 + (Math.abs(hashCode(wh)) % 20)/100; // 0.90..1.10
 
       const orders = Math.round(rand(320, 780) * whFactor * weekendFactor);
       const unitsPerOrder = rand(1.10, 1.55);
       const units = Math.round(orders * unitsPerOrder);
 
-      const interceptRateOrders = clamp(rand(0.018, 0.085) + (whFactor-1)*0.01, 0.01, 0.12);
+      const interceptRateOrders = clamp(rand(0.018, 0.085) + (whFactor-1)*0.012, 0.01, 0.14);
       const interceptAbs = Math.round(orders * interceptRateOrders);
-      const interceptRateUnits = clamp(interceptRateOrders * rand(0.85, 1.20), 0.01, 0.14);
+      const interceptRateUnits = clamp(interceptRateOrders * rand(0.85, 1.20), 0.01, 0.16);
 
       const dayIndex = Math.round((d - start)/(24*3600*1000));
       const trend = -0.015 * dayIndex;
-      const speedHours = clamp(rand(15.5, 26.5) + trend + (whFactor-1)*1.2, 10.5, 34);
+      const speedHours = clamp(rand(15.5, 26.5) + trend + (whFactor-1)*1.4, 10.5, 36);
 
-      const touches = clamp(rand(2.2, 4.1) + (whFactor-1)*0.25 + trend*0.3, 1.6, 5.2);
+      const touches = clamp(rand(2.2, 4.1) + (whFactor-1)*0.28 + trend*0.3, 1.6, 5.4);
 
       const sortErrRate = clamp(rand(0.002, 0.020) + (whFactor-1)*0.002 + (dow===1?0.001:0), 0.001, 0.03);
 
@@ -637,6 +704,15 @@ function generateMockRows(){
     });
   }
   return rows;
+}
+
+function hashCode(str){
+  let h = 0;
+  for(let i=0;i<str.length;i++){
+    h = ((h<<5) - h) + str.charCodeAt(i);
+    h |= 0;
+  }
+  return h;
 }
 
 function applyFilters(){
@@ -679,9 +755,8 @@ function agg(rows){
   return { orders, units, interceptAbs, interceptRateOrders, interceptRateUnits, speedHours, touchesPerUnit, sortErrRate };
 }
 
-/* ===== KPI deltas: positive 5%..30% and green ===== */
+/* ===== KPI deltas: positive 5%..30% ===== */
 function ensureKpiDeltas(){
-  // stable per page load unless "regen" triggered
   const keys = [
     "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)",
     "2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт",
@@ -692,7 +767,7 @@ function ensureKpiDeltas(){
   ];
   keys.forEach(k=>{
     if(state.kpiDeltaPct[k] == null){
-      state.kpiDeltaPct[k] = rand(0.05, 0.30); // 5%..30%
+      state.kpiDeltaPct[k] = rand(0.05, 0.30);
     }
   });
 }
@@ -703,37 +778,19 @@ function buildKpis(){
   const cur = agg(state.filtered);
 
   const cards = [
-    {
-      label: "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)",
-      value: fmtHours(cur.speedHours)
-    },
-    {
-      label: "2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт",
-      value: fmt1(cur.touchesPerUnit)
-    },
-    {
-      label: "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада",
-      value: fmtPct(cur.interceptRateOrders)
-    },
-    {
-      label: "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада",
-      value: fmtPct(cur.interceptRateUnits)
-    },
-    {
-      label: "4. абсолютное кол-во перехваченных заказов в рамках складов / компании",
-      value: fmtNum(cur.interceptAbs)
-    },
-    {
-      label: "5. % ошибочных перемещений в тару сортировки",
-      value: fmtPct(cur.sortErrRate)
-    }
+    { label:"1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)", value: fmtHours(cur.speedHours) },
+    { label:"2. Снижение кол-ва касаний -> снижение затрат на обработку одной шт", value: fmt1(cur.touchesPerUnit) },
+    { label:"3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада", value: fmtPct(cur.interceptRateOrders) },
+    { label:"3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада", value: fmtPct(cur.interceptRateUnits) },
+    { label:"4. абсолютное кол-во перехваченных заказов в рамках складов / компании", value: fmtNum(cur.interceptAbs) },
+    { label:"5. % ошибочных перемещений в тару сортировки", value: fmtPct(cur.sortErrRate) }
   ];
 
   kpiGrid.innerHTML = "";
   cards.forEach(c=>{
+    const delta = state.kpiDeltaPct[c.label] ?? 0.12;
     const d = document.createElement("div");
     d.className = "card kpi";
-    const delta = state.kpiDeltaPct[c.label] ?? 0.12;
     d.innerHTML = `
       <div class="klabel">${c.label}</div>
       <div class="kvalue">${c.value}</div>
@@ -751,8 +808,18 @@ function destroyChart(id){
   }
 }
 
-function buildCharts(){
-  const byDay = groupBy(state.filtered, r=>r.date);
+const COLORS = ["#2563eb","#7c3aed","#10b981","#f59e0b","#ef4444","#06b6d4"];
+
+function buildCombinedChartsForScope(scopeKey, canvas12, canvas34, canvas5u){
+  // scopeKey: "company" | "Коледино" | "Казань"
+  let scopedRows = [];
+  if(scopeKey === "company"){
+    scopedRows = state.filtered;
+  } else {
+    scopedRows = state.filtered.filter(r => r.warehouse === scopeKey);
+  }
+
+  const byDay = groupBy(scopedRows, r=>r.date);
   const labels = Array.from(byDay.keys()).sort();
 
   const series = labels.map(day=>{
@@ -776,7 +843,7 @@ function buildCharts(){
       legend:{
         display:true,
         labels:{ boxWidth:18, boxHeight:10, font:{ weight:"700" } }
-        // Default Chart.js behavior: click legend -> toggle dataset visibility ✅
+        // Chart.js: legend click toggles dataset visibility by default
       },
       tooltip:{ enabled:true }
     },
@@ -785,12 +852,9 @@ function buildCharts(){
     }
   };
 
-  // helper: deterministic colors per dataset (different)
-  const COLORS = ["#2563eb","#7c3aed","#10b981","#f59e0b","#ef4444","#06b6d4"];
-
-  // Chart A: 1+2 (two lines, dual axes for readability)
-  destroyChart("c_comb_12");
-  state.charts["c_comb_12"] = new Chart(document.getElementById("c_comb_12"), {
+  // 1+2
+  destroyChart(canvas12);
+  state.charts[canvas12] = new Chart(document.getElementById(canvas12), {
     type:"line",
     data:{
       labels,
@@ -825,9 +889,9 @@ function buildCharts(){
     }
   });
 
-  // Chart B: 3.1 + 3.2 + 4 (rates + abs) -> dual axes
-  destroyChart("c_comb_3_4");
-  state.charts["c_comb_3_4"] = new Chart(document.getElementById("c_comb_3_4"), {
+  // 3.1 + 3.2 + 4
+  destroyChart(canvas34);
+  state.charts[canvas34] = new Chart(document.getElementById(canvas34), {
     data:{
       labels,
       datasets:[
@@ -879,9 +943,9 @@ function buildCharts(){
     }
   });
 
-  // Chart C: 5 + Units (rate + volume) -> dual axes
-  destroyChart("c_comb_5_units");
-  state.charts["c_comb_5_units"] = new Chart(document.getElementById("c_comb_5_units"), {
+  // 5 + units
+  destroyChart(canvas5u);
+  state.charts[canvas5u] = new Chart(document.getElementById(canvas5u), {
     data:{
       labels,
       datasets:[
@@ -922,6 +986,15 @@ function buildCharts(){
       }
     }
   });
+}
+
+function buildCharts(){
+  // company (filtered)
+  buildCombinedChartsForScope("company", "c_company_12", "c_company_34", "c_company_5u");
+  // Koledino
+  buildCombinedChartsForScope("Коледино", "c_koledino_12", "c_koledino_34", "c_koledino_5u");
+  // Kazan
+  buildCombinedChartsForScope("Казань", "c_kazan_12", "c_kazan_34", "c_kazan_5u");
 }
 
 /* ===== Table ===== */
@@ -1064,7 +1137,6 @@ function setMode(mode){
 function refreshAll(regen=false){
   updateRangeLabel();
   if(regen){
-    // regenerate data and refresh KPI positive deltas (still 5..30%)
     state.raw = generateMockRows();
     state.kpiDeltaPct = {};
     ensureKpiDeltas();
@@ -1113,7 +1185,6 @@ function refreshAll(regen=false){
   document.getElementById("tableSearch").addEventListener("input", ()=> buildTable());
   document.getElementById("refreshBtn").addEventListener("click", ()=> refreshAll(true));
 
-  // initial data
   state.raw = generateMockRows();
   refreshAll(false);
 })();
