@@ -323,7 +323,6 @@
 
 <div class="filtersbar">
   <div class="filters">
-    <!-- ✅ вернули фильтр по складам на прежнее место -->
     <div class="fgroup dropdown" style="min-width:340px;">
       <div class="flabel">Склад (выбрано: <span id="whCount">0</span>) *</div>
       <div class="control" id="whControl" style="cursor:pointer;">
@@ -338,7 +337,6 @@
       <div class="menu" id="whMenu"></div>
     </div>
 
-    <!-- оставили период -->
     <div class="fgroup" style="min-width:420px; flex:1 1 auto;">
       <div class="flabel">Период *</div>
       <div class="daterange">
@@ -449,7 +447,6 @@
     </div>
   </div>
 
-  <!-- TABLE tab: only the table -->
   <div id="tableView" style="display:none;">
     <div class="card" style="padding:14px;">
       <div class="table-wrap">
@@ -462,7 +459,6 @@
     </div>
   </div>
 
-  <!-- Search by Order ID tab -->
   <div id="searchView" style="display:none;">
     <div class="card" style="padding:14px;">
       <div class="searchbar">
@@ -498,12 +494,13 @@ const state = {
   charts: {},
   selectedWarehouses: new Set(),
   kpiDeltaPct: {},
-  searchRows: []
+  moneyPerInterceptOrder: 215.0 // ₽, условная экономика на 1 перехваченный заказ
 };
 
 function rand(min, max){ return Math.random()*(max-min)+min; }
 function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
 function fmtNum(n){ return n.toLocaleString("ru-RU"); }
+function fmtMoney(n){ return Math.round(n).toLocaleString("ru-RU") + " ₽"; }
 function fmtPct(x){ return (x*100).toFixed(1) + "%"; }
 function fmtHours(x){ return x.toFixed(1) + " ч"; }
 function fmt1(x){ return x.toFixed(1); }
@@ -610,11 +607,6 @@ function hashCode(str){
   return h;
 }
 
-function makeOrderId(wh, date){
-  const base = Math.abs(hashCode(wh + "|" + date));
-  return String(1000000000 + (base % 9000000000));
-}
-
 function generateMockRows(){
   const {from, to} = getDateRange();
   const start = new Date(from);
@@ -653,7 +645,6 @@ function generateMockRows(){
       rows.push({
         date,
         warehouse: wh,
-        order_id: makeOrderId(wh, date),
         orders,
         units,
         intercept_rate_orders: interceptRateOrders,
@@ -701,7 +692,11 @@ function agg(rows){
   const touchesPerUnit = wavg("touches_per_unit","units");
   const sortErrRate = wavg("sort_error_rate","units");
 
-  return { orders, units, interceptAbs, interceptRateOrders, speedHours, touchesPerUnit, sortErrRate };
+  // деньги
+  const interceptMoney = interceptAbs * state.moneyPerInterceptOrder; // ₽
+  const whSavingsMoney = interceptAbs * state.moneyPerInterceptOrder; // ₽ (в тесте то же самое)
+
+  return { orders, units, interceptAbs, interceptRateOrders, speedHours, touchesPerUnit, sortErrRate, interceptMoney, whSavingsMoney };
 }
 
 /* ===== KPI deltas ===== */
@@ -712,7 +707,8 @@ function ensureKpiDeltas(){
     "3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада",
     "3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада",
     "4. абсолютное кол-во перехваченных заказов в рамках складов / компании",
-    "5. % ошибочных перемещений в тару сортировки"
+    "5. Экономия склада при заказах с приемки",
+    "6. Сумма заказов в деньгах (перехвачено на приемке)"
   ];
   keys.forEach(k=>{
     if(state.kpiDeltaPct[k] == null) state.kpiDeltaPct[k] = rand(0.05, 0.30);
@@ -730,7 +726,8 @@ function buildKpis(){
     { label:"3. % перехваченных заказов на приемке: 3.1. от кол-ва заказов в рамках склада", value: fmtPct(cur.interceptRateOrders) },
     { label:"3. % перехваченных заказов на приемке: 3.2. от кол-ва товаров на приемке в рамках склада", value: fmtPct(cur.units ? (cur.interceptAbs / cur.units) : 0) },
     { label:"4. абсолютное кол-во перехваченных заказов в рамках складов / компании", value: fmtNum(cur.interceptAbs) },
-    { label:"5. % ошибочных перемещений в тару сортировки", value: fmtPct(cur.sortErrRate) }
+    { label:"5. Экономия склада при заказах с приемки", value: fmtMoney(cur.whSavingsMoney) },
+    { label:"6. Сумма заказов в деньгах (перехвачено на приемке)", value: fmtMoney(cur.interceptMoney) }
   ];
 
   kpiGrid.innerHTML = "";
@@ -853,7 +850,7 @@ function buildCharts(){
   buildCombinedChartsForScope("Казань", "c_kazan_12", "c_kazan_34", "c_kazan_5u");
 }
 
-/* ===== TABLE: aggregated per warehouse for selected period ===== */
+/* ===== TABLE (unchanged) ===== */
 function buildTable(){
   const table = document.getElementById("dataTable");
   const thead = table.querySelector("thead");
@@ -955,7 +952,7 @@ function buildTable(){
   });
 }
 
-/* ===== Search-by-order-id tab (single result) ===== */
+/* ===== Search tab (single row) ===== */
 function pad2(n){ return String(n).padStart(2,"0"); }
 function fmtDateRu(d){ return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`; }
 function fmtTimeRu(d){ return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`; }
@@ -966,46 +963,8 @@ function seededRand(seed){
   x ^= x << 5;  x >>>= 0;
   return (x % 10000) / 10000;
 }
-function buildSearchResult(orderId5){
-  const whList = Array.from(state.selectedWarehouses.size ? state.selectedWarehouses : new Set(WAREHOUSES)).sort();
-  const seed = Math.abs(hashCode(String(orderId5)));
-  const baseDay = new Date(getDateRange().to + "T00:00:00");
 
-  const r0 = seededRand(seed + 101);
-  const r1 = seededRand(seed + 108);
-  const r2 = seededRand(seed + 114);
-
-  const wh = whList[Math.floor(r0 * whList.length)] || "Коледино";
-
-  const orderDt = new Date(baseDay);
-  orderDt.setDate(orderDt.getDate() - (1 + Math.floor(r1 * 10)));
-  orderDt.setHours(8 + Math.floor(r2 * 10), Math.floor(r1 * 60), Math.floor(r0 * 60));
-
-  const arrivalDt = new Date(orderDt);
-  arrivalDt.setHours(arrivalDt.getHours() + (3 + Math.floor(r0 * 10)));
-  arrivalDt.setMinutes(arrivalDt.getMinutes() + (10 + Math.floor(r2 * 40)));
-
-  const shipDt = new Date(arrivalDt);
-  shipDt.setHours(shipDt.getHours() + (6 + Math.floor(r1 * 12)));
-  shipDt.setMinutes(shipDt.getMinutes() + Math.floor(r0 * 50));
-
-  const tableNo = 1 + Math.floor(r2 * 30);
-  const empNo = 1000 + Math.floor(r1 * 9000);
-
-  return [{
-    "Склад": wh,
-    "ID заказа": String(orderId5),
-    "Дата заказа": fmtDateRu(orderDt),
-    "Время заказ": fmtTimeRu(orderDt),
-    "Дата поступления товара на стол приемки": fmtDateRu(arrivalDt),
-    "Время поступления товара на стол приемки": fmtTimeRu(arrivalDt),
-    "№ Стола приемки": String(tableNo),
-    "№ Сотрудника на столе приемки": String(empNo),
-    "Время отгрузки заказа": fmtTimeRu(shipDt)
-  }];
-}
-
-function renderSearchTable(){
+function renderSearchTable(rows){
   const table = document.getElementById("searchTable");
   const thead = table.querySelector("thead");
   const tbody = table.querySelector("tbody");
@@ -1023,25 +982,54 @@ function renderSearchTable(){
   ];
 
   thead.innerHTML = "<tr>" + cols.map(c=>`<th>${c}</th>`).join("") + "</tr>";
+  if(!rows || rows.length===0){ tbody.innerHTML=""; return; }
 
-  if(!state.searchRows || state.searchRows.length === 0){
-    tbody.innerHTML = "";
-    return;
-  }
-
-  tbody.innerHTML = state.searchRows.map(r=>{
+  tbody.innerHTML = rows.map(r=>{
     return "<tr>" + cols.map(c=>`<td>${r[c] ?? ""}</td>`).join("") + "</tr>";
   }).join("");
+}
+
+function buildSearchRow(orderId5){
+  const seed = Math.abs(hashCode(String(orderId5)));
+  const whList = Array.from(state.selectedWarehouses.size ? state.selectedWarehouses : new Set(WAREHOUSES)).sort();
+  const wh = whList[Math.floor(seededRand(seed+7)*whList.length)] || "Коледино";
+
+  const baseDay = new Date(getDateRange().to + "T00:00:00");
+  const orderDt = new Date(baseDay);
+  orderDt.setDate(orderDt.getDate() - (1 + Math.floor(seededRand(seed+11) * 10)));
+  orderDt.setHours(8 + Math.floor(seededRand(seed+13) * 10), Math.floor(seededRand(seed+17) * 60), Math.floor(seededRand(seed+19) * 60));
+
+  const arrivalDt = new Date(orderDt);
+  arrivalDt.setHours(arrivalDt.getHours() + (3 + Math.floor(seededRand(seed+23) * 10)));
+  arrivalDt.setMinutes(arrivalDt.getMinutes() + (10 + Math.floor(seededRand(seed+29) * 40)));
+
+  const shipDt = new Date(arrivalDt);
+  shipDt.setHours(shipDt.getHours() + (6 + Math.floor(seededRand(seed+31) * 12)));
+  shipDt.setMinutes(shipDt.getMinutes() + Math.floor(seededRand(seed+37) * 50));
+
+  const tableNo = 1 + Math.floor(seededRand(seed+41) * 30);
+  const empNo = 1000 + Math.floor(seededRand(seed+43) * 9000);
+
+  return [{
+    "Склад": wh,
+    "ID заказа": String(orderId5),
+    "Дата заказа": fmtDateRu(orderDt),
+    "Время заказ": fmtTimeRu(orderDt),
+    "Дата поступления товара на стол приемки": fmtDateRu(arrivalDt),
+    "Время поступления товара на стол приемки": fmtTimeRu(arrivalDt),
+    "№ Стола приемки": String(tableNo),
+    "№ Сотрудника на столе приемки": String(empNo),
+    "Время отгрузки заказа": fmtTimeRu(shipDt)
+  }];
 }
 
 function onSearchClick(){
   const v = (document.getElementById("orderIdInput").value || "").trim();
   if(/^\d{5}$/.test(v)){
-    state.searchRows = buildSearchResult(v); // ✅ всегда 1 строка
+    renderSearchTable(buildSearchRow(v));
   } else {
-    state.searchRows = [];
+    renderSearchTable([]);
   }
-  renderSearchTable();
 }
 
 /* ===== Tabs ===== */
@@ -1076,7 +1064,6 @@ function refreshAll(regen=false){
   updateWarehouseControl();
   updateRangeLabel();
 
-  // ✅ фикс кликабельности: стопаем всплытие, чтобы document.click не закрывал меню сразу
   document.getElementById("whControl").addEventListener("click", (e)=>{
     e.stopPropagation();
     if(e.target && e.target.id === "whClear") return;
@@ -1099,19 +1086,17 @@ function refreshAll(regen=false){
   });
 
   document.getElementById("refreshBtn").addEventListener("click", ()=> refreshAll(true));
-
   document.getElementById("orderIdBtn").addEventListener("click", onSearchClick);
-  document.getElementById("orderIdInput").addEventListener("keydown", (e)=>{
-    if(e.key === "Enter") onSearchClick();
-  });
+  document.getElementById("orderIdInput").addEventListener("keydown", (e)=>{ if(e.key==="Enter") onSearchClick(); });
 
   state.raw = generateMockRows();
   refreshAll(false);
 
-  renderSearchTable();
+  renderSearchTable([]); // пусто до поиска
 })();
 </script>
 </body>
 </html>
+
 
 
