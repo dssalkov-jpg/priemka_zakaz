@@ -335,8 +335,8 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">2.1–2.2. % перехвата (от заказов / от товаров) + абсолют перехваченных заказов</div>
-        <div class="chart-sub">Три серии (легенда кликабельна: скрывает/показывает серию)</div>
+        <div class="chart-title">2. % перехваченных заказов на приемке + абсолют перехваченных заказов</div>
+        <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
         <canvas id="c_company_34"></canvas>
       </div>
 
@@ -361,8 +361,8 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">2.1–2.2. % перехвата (от заказов / от товаров) + абсолют перехваченных заказов</div>
-        <div class="chart-sub">Три серии (легенда кликабельна: скрывает/показывает серию)</div>
+        <div class="chart-title">2. % перехваченных заказов на приемке + абсолют перехваченных заказов</div>
+        <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
         <canvas id="c_koledino_34"></canvas>
       </div>
 
@@ -387,8 +387,8 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">2.1–2.2. % перехвата (от заказов / от товаров) + абсолют перехваченных заказов</div>
-        <div class="chart-sub">Три серии (легенда кликабельна: скрывает/показывает серию)</div>
+        <div class="chart-title">2. % перехваченных заказов на приемке + абсолют перехваченных заказов</div>
+        <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
         <canvas id="c_kazan_34"></canvas>
       </div>
 
@@ -545,7 +545,6 @@ function hashCode(str){
 }
 
 function whSeed01(wh){
-  // stable 0..1 for each warehouse
   const x = Math.abs(hashCode(wh)) % 1000;
   return x / 999;
 }
@@ -580,20 +579,16 @@ function generateMockRows(){
       const trend = -0.015 * dayIndex;
       const speedHours = clamp(rand(15.5, 26.5) + trend + (whFactor-1)*1.4, 10.5, 36);
 
-      // touches still in data/table, but removed from KPI and charts
       const touches = clamp(rand(2.2, 4.1) + (whFactor-1)*0.28 + trend*0.3, 1.6, 5.4);
 
       const sortErrRate = clamp(rand(0.002, 0.020) + (whFactor-1)*0.002 + (dow===1?0.001:0), 0.001, 0.03);
 
-      // Money model (mock):
-      // - intercepted_orders_amount_rub: sum of money for intercepted orders
-      // - savings_rub: operational savings for intercepted orders
       const s = whSeed01(wh);
-      const baseAov = 1400 + 2800 * s;          // 1400..4200
-      const aov = baseAov * (0.95 + 0.10*Math.sin((dayIndex+1)*0.6)); // mild day wobble
+      const baseAov = 1400 + 2800 * s;
+      const aov = baseAov * (0.95 + 0.10*Math.sin((dayIndex+1)*0.6));
       const interceptedAmountRub = interceptAbs * aov;
 
-      const savingsPerOrder = 18 + 62 * (1 - s); // 80..18 (varies by wh)
+      const savingsPerOrder = 18 + 62 * (1 - s);
       const savingsRub = interceptAbs * savingsPerOrder;
 
       const date = dateKey(d);
@@ -602,7 +597,7 @@ function generateMockRows(){
         warehouse: wh,
         orders,
         units,
-        intercept_rate_orders: interceptRateOrders,
+        intercept_rate_orders: interceptRateOrders, // used for unified "%"
         intercept_abs: interceptAbs,
         speed_hours: speedHours,
         touches_per_unit: touches,
@@ -644,7 +639,7 @@ function agg(rows){
   const orders = sum("orders");
   const units  = sum("units");
   const interceptAbs = sum("intercept_abs");
-  const interceptRateOrders = wavg("intercept_rate_orders","orders");
+  const interceptRateOrders = wavg("intercept_rate_orders","orders"); // unified %
   const speedHours = wavg("speed_hours","orders");
   const touchesPerUnit = wavg("touches_per_unit","units");
   const sortErrRate = wavg("sort_error_rate","units");
@@ -662,8 +657,7 @@ function agg(rows){
 function ensureKpiDeltas(){
   const keys = [
     "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)",
-    "2.1 % перехваченных заказов на приемке: от кол-ва заказов в рамках склада",
-    "2.2 % перехваченных заказов на приемке: от кол-ва товаров на приемке в рамках склада",
+    "2. % перехваченных заказов на приемке",
     "3. абсолютное кол-во перехваченных заказов в рамках складов / компании",
     "4. Экономия склада при заказах с приемки",
     "5. Сумма заказов в деньгах (перехвачено на приемке)"
@@ -680,8 +674,7 @@ function buildKpis(){
 
   const cards = [
     { label:"1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)", value: fmtHours(cur.speedHours) },
-    { label:"2.1 % перехваченных заказов на приемке: от кол-ва заказов в рамках склада", value: fmtPct(cur.interceptRateOrders) },
-    { label:"2.2 % перехваченных заказов на приемке: от кол-ва товаров на приемке в рамках склада", value: fmtPct(cur.units ? (cur.interceptAbs / cur.units) : 0) },
+    { label:"2. % перехваченных заказов на приемке", value: fmtPct(cur.interceptRateOrders) },
     { label:"3. абсолютное кол-во перехваченных заказов в рамках складов / компании", value: fmtNum(cur.interceptAbs) },
     { label:"4. Экономия склада при заказах с приемки", value: fmtRub(cur.savingsRub) },
     { label:"5. Сумма заказов в деньгах (перехвачено на приемке)", value: fmtRub(cur.interceptedAmountRub) }
@@ -722,7 +715,7 @@ function buildCombinedChartsForScope(scopeKey, canvas12, canvas34, canvas5u){
     const a = agg(byDay.get(day));
     return {
       speed: a.speedHours,
-      intRateOrders: a.interceptRateOrders,
+      interceptPct: a.interceptRateOrders,
       intAbs: a.interceptAbs,
       sortErr: a.sortErrRate,
       units: a.units
@@ -740,7 +733,7 @@ function buildCombinedChartsForScope(scopeKey, canvas12, canvas34, canvas5u){
     scales:{ x:{ ticks:{ maxRotation:45, minRotation:45 } } }
   };
 
-  // Chart 1: speed only (removed "touches")
+  // Chart 1: speed only
   destroyChart(canvas12);
   state.charts[canvas12] = new Chart(document.getElementById(canvas12), {
     type:"line",
@@ -759,15 +752,14 @@ function buildCombinedChartsForScope(scopeKey, canvas12, canvas34, canvas5u){
     }
   });
 
-  // Chart 2: intercept metrics unchanged
+  // Chart 2: unified % intercept + absolute
   destroyChart(canvas34);
   state.charts[canvas34] = new Chart(document.getElementById(canvas34), {
     data:{
       labels,
       datasets:[
-        { type:"line", label:"2.1 Доля от заказов", data: series.map(s=>+s.intRateOrders.toFixed(4)), borderColor: COLORS[2], backgroundColor: COLORS[2], tension:0.25, pointRadius:2.2, yAxisID:"y" },
-        { type:"bar",  label:"3. Перехвачено, заказов", data: series.map(s=>s.intAbs), borderColor: COLORS[0], backgroundColor:"rgba(37, 99, 235, 0.18)", yAxisID:"y1" },
-        { type:"line", label:"2.2 Доля от товаров", data: series.map(s=> (s.units ? +(s.intAbs/s.units).toFixed(4) : 0)), borderColor: COLORS[3], backgroundColor: COLORS[3], tension:0.25, pointRadius:2.2, yAxisID:"y" }
+        { type:"line", label:"2. % перехваченных заказов на приемке", data: series.map(s=>+s.interceptPct.toFixed(4)), borderColor: COLORS[2], backgroundColor: COLORS[2], tension:0.25, pointRadius:2.2, yAxisID:"y" },
+        { type:"bar",  label:"3. Перехвачено, заказов", data: series.map(s=>s.intAbs), borderColor: COLORS[0], backgroundColor:"rgba(37, 99, 235, 0.18)", yAxisID:"y1" }
       ]
     },
     options:{
@@ -814,7 +806,6 @@ function buildTable(){
   const tbody = table.querySelector("tbody");
   const tfoot = table.querySelector("tfoot");
 
-  // 1 row per warehouse (aggregated within selected period)
   const g = groupBy(state.filtered, r => r.warehouse);
 
   let rows = Array.from(g.entries()).map(([warehouse, items])=>{
@@ -969,5 +960,4 @@ function refreshAll(regen=false){
 </script>
 </body>
 </html>
-
 
