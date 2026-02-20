@@ -238,7 +238,7 @@
   canvas{ width:100% !important; height:300px !important; }
 
   .table-wrap{ overflow:auto; border-radius:var(--radius); }
-  table{ width:100%; border-collapse:separate; border-spacing:0; min-width:900px; }
+  table{ width:100%; border-collapse:separate; border-spacing:0; min-width:980px; }
   thead th{
     position:sticky; top:0;
     background:#fff;
@@ -335,15 +335,7 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">2. Доп. показатели: % ошибочных перемещений + поток товаров на приемке (шт)</div>
-        <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
-        <canvas id="c_company_5u"></canvas>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card chart-card">
-        <div class="chart-title">3. Экономия склада на переданных заказах</div>
+        <div class="chart-title">2. Экономия склада на переданных заказах</div>
         <div class="chart-sub">Одна серия</div>
         <canvas id="c_company_save"></canvas>
       </div>
@@ -351,7 +343,7 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">4. Сумма переданных заказов в деньгах</div>
+        <div class="chart-title">3. Сумма переданных заказов в деньгах</div>
         <div class="chart-sub">Одна серия</div>
         <canvas id="c_company_sum"></canvas>
       </div>
@@ -369,15 +361,7 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">2. Доп. показатели: % ошибочных перемещений + поток товаров на приемке (шт)</div>
-        <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
-        <canvas id="c_koledino_5u"></canvas>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card chart-card">
-        <div class="chart-title">3. Экономия склада на переданных заказах</div>
+        <div class="chart-title">2. Экономия склада на переданных заказах</div>
         <div class="chart-sub">Одна серия</div>
         <canvas id="c_koledino_save"></canvas>
       </div>
@@ -385,7 +369,7 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">4. Сумма переданных заказов в деньгах</div>
+        <div class="chart-title">3. Сумма переданных заказов в деньгах</div>
         <div class="chart-sub">Одна серия</div>
         <canvas id="c_koledino_sum"></canvas>
       </div>
@@ -403,15 +387,7 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">2. Доп. показатели: % ошибочных перемещений + поток товаров на приемке (шт)</div>
-        <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
-        <canvas id="c_kazan_5u"></canvas>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card chart-card">
-        <div class="chart-title">3. Экономия склада на переданных заказах</div>
+        <div class="chart-title">2. Экономия склада на переданных заказах</div>
         <div class="chart-sub">Одна серия</div>
         <canvas id="c_kazan_save"></canvas>
       </div>
@@ -419,7 +395,7 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">4. Сумма переданных заказов в деньгах</div>
+        <div class="chart-title">3. Сумма переданных заказов в деньгах</div>
         <div class="chart-sub">Одна серия</div>
         <canvas id="c_kazan_sum"></canvas>
       </div>
@@ -596,6 +572,7 @@ function generateMockRows(){
       const transferRateOrders = clamp(rand(0.018, 0.085) + (whFactor-1)*0.012, 0.01, 0.14);
       const transferredAbs = Math.round(orders * transferRateOrders);
 
+      // сохраняем в данных (не рисуем отдельным графиком)
       const sortErrRate = clamp(rand(0.002, 0.020) + (whFactor-1)*0.002 + (dow===1?0.001:0), 0.001, 0.03);
 
       const s = whSeed01(wh);
@@ -653,12 +630,11 @@ function agg(rows){
   const orders = sum("orders");
   const transferredAbs = sum("transferred_abs");
   const transferRateOrders = wavg("transfer_rate_orders","orders");
-  const sortErrRate = wavg("sort_error_rate","units");
 
   const transferredAmountRub = sum("transferred_amount_rub");
   const savingsRub = sum("savings_rub");
 
-  return { orders, transferredAbs, transferRateOrders, sortErrRate, transferredAmountRub, savingsRub };
+  return { orders, transferredAbs, transferRateOrders, transferredAmountRub, savingsRub };
 }
 
 /* ===== KPI deltas ===== */
@@ -722,7 +698,7 @@ function baseOptions(){
   };
 }
 
-function buildScopeCharts(scopeKey, canvas34, canvas5u, canvasSave, canvasSum){
+function buildScopeCharts(scopeKey, canvas34, canvasSave, canvasSum){
   let scopedRows = [];
   if(scopeKey === "company") scopedRows = state.filtered;
   else scopedRows = state.filtered.filter(r => r.warehouse === scopeKey);
@@ -735,8 +711,6 @@ function buildScopeCharts(scopeKey, canvas34, canvas5u, canvasSave, canvasSum){
     return {
       pct: a.transferRateOrders,
       abs: a.transferredAbs,
-      sortErr: a.sortErrRate,
-      units: byDay.get(day).reduce((s,x)=>s + (x.units||0), 0),
       savings: a.savingsRub,
       amount: a.transferredAmountRub
     };
@@ -762,27 +736,7 @@ function buildScopeCharts(scopeKey, canvas34, canvas5u, canvasSave, canvasSum){
     }
   });
 
-  // 2) additional metrics
-  destroyChart(canvas5u);
-  state.charts[canvas5u] = new Chart(document.getElementById(canvas5u), {
-    data:{
-      labels,
-      datasets:[
-        { type:"line", label:"% ошибочных перемещений", data: series.map(s=>+s.sortErr.toFixed(4)), borderColor: COLORS[4], backgroundColor: COLORS[4], tension:0.25, pointRadius:2.2, yAxisID:"y" },
-        { type:"bar",  label:"Поток товаров на приемке, шт", data: series.map(s=>s.units), borderColor: COLORS[5], backgroundColor:"rgba(6, 182, 212, 0.20)", yAxisID:"y1" }
-      ]
-    },
-    options:{
-      ...baseOptions(),
-      scales:{
-        x: baseOptions().scales.x,
-        y:{ position:"left", ticks:{ callback:(v)=> (v*100).toFixed(0)+"%" }, title:{ display:true, text:"%" } },
-        y1:{ position:"right", grid:{ drawOnChartArea:false }, title:{ display:true, text:"Шт" } }
-      }
-    }
-  });
-
-  // 3) savings
+  // 2) savings
   destroyChart(canvasSave);
   state.charts[canvasSave] = new Chart(document.getElementById(canvasSave), {
     type:"line",
@@ -802,7 +756,7 @@ function buildScopeCharts(scopeKey, canvas34, canvas5u, canvasSave, canvasSum){
     }
   });
 
-  // 4) amount
+  // 3) amount
   destroyChart(canvasSum);
   state.charts[canvasSum] = new Chart(document.getElementById(canvasSum), {
     type:"line",
@@ -824,9 +778,9 @@ function buildScopeCharts(scopeKey, canvas34, canvas5u, canvasSave, canvasSum){
 }
 
 function buildCharts(){
-  buildScopeCharts("company", "c_company_34", "c_company_5u", "c_company_save", "c_company_sum");
-  buildScopeCharts("Коледино", "c_koledino_34", "c_koledino_5u", "c_koledino_save", "c_koledino_sum");
-  buildScopeCharts("Казань", "c_kazan_34", "c_kazan_5u", "c_kazan_save", "c_kazan_sum");
+  buildScopeCharts("company", "c_company_34", "c_company_save", "c_company_sum");
+  buildScopeCharts("Коледино", "c_koledino_34", "c_koledino_save", "c_koledino_sum");
+  buildScopeCharts("Казань", "c_kazan_34", "c_kazan_save", "c_kazan_sum");
 }
 
 /* ===== TABLE: aggregated per warehouse for selected period ===== */
@@ -836,12 +790,16 @@ function buildTable(){
   const tbody = table.querySelector("tbody");
   const tfoot = table.querySelector("tfoot");
 
+  const {from,to} = getDateRange();
+  const periodLabel = `${from} — ${to}`;
+
   const g = groupBy(state.filtered, r => r.warehouse);
 
   let rows = Array.from(g.entries()).map(([warehouse, items])=>{
     const a = agg(items);
     return {
-      "__warehouse": warehouse,
+      "Склад": warehouse,
+      "Период": periodLabel,
       "кол-во переданных заказов": a.transferredAbs,
       "% переданных заказов": a.transferRateOrders,
       "Экономия склада на переданных заказах": a.savingsRub,
@@ -850,6 +808,8 @@ function buildTable(){
   });
 
   const cols = [
+    "Склад",
+    "Период",
     "кол-во переданных заказов",
     "% переданных заказов",
     "Экономия склада на переданных заказах",
@@ -865,7 +825,7 @@ function buildTable(){
       return String(av).localeCompare(String(bv))*dir;
     });
   } else {
-    rows.sort((a,b)=> a.__warehouse.localeCompare(b.__warehouse));
+    rows.sort((a,b)=> String(a["Склад"]).localeCompare(String(b["Склад"])));
   }
 
   thead.innerHTML = "<tr>" + cols.map(c=>`<th data-col="${c}">${c}</th>`).join("") + "</tr>";
@@ -873,8 +833,14 @@ function buildTable(){
   tbody.innerHTML = rows.map(r=>{
     return "<tr>" + cols.map(c=>{
       const v = r[c];
-      let out = v;
 
+      // left for text columns
+      if(c === "Склад" || c === "Период"){
+        return `<td>${v}</td>`;
+      }
+
+      // right for metric columns
+      let out = v;
       if(c.startsWith("% ")) out = fmtPct(v);
       else if(c.includes("Экономия") || c.includes("Сумма")) out = fmtRub(v);
       else out = fmtNum(Math.round(v));
@@ -885,6 +851,8 @@ function buildTable(){
 
   const total = agg(state.filtered);
   const totalsRow = {
+    "Склад":"Итого",
+    "Период": periodLabel,
     "кол-во переданных заказов": total.transferredAbs,
     "% переданных заказов": total.transferRateOrders,
     "Экономия склада на переданных заказах": total.savingsRub,
@@ -893,8 +861,12 @@ function buildTable(){
 
   tfoot.innerHTML = "<tr>" + cols.map(c=>{
     const v = totalsRow[c];
-    let out = v;
 
+    if(c === "Склад" || c === "Период"){
+      return `<td>${v}</td>`;
+    }
+
+    let out = v;
     if(c.startsWith("% ")) out = fmtPct(v);
     else if(c.includes("Экономия") || c.includes("Сумма")) out = fmtRub(v);
     else out = fmtNum(Math.round(v));
