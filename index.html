@@ -238,7 +238,7 @@
   canvas{ width:100% !important; height:300px !important; }
 
   .table-wrap{ overflow:auto; border-radius:var(--radius); }
-  table{ width:100%; border-collapse:separate; border-spacing:0; min-width:1180px; }
+  table{ width:100%; border-collapse:separate; border-spacing:0; min-width:900px; }
   thead th{
     position:sticky; top:0;
     background:#fff;
@@ -327,15 +327,7 @@
       <div class="lane-title">Сводная по всем складам</div>
 
       <div class="card chart-card">
-        <div class="chart-title">1. Скорость отгрузки</div>
-        <div class="chart-sub">Одна линия (легенда кликабельна: скрывает/показывает серию)</div>
-        <canvas id="c_company_12"></canvas>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card chart-card">
-        <div class="chart-title">2. % перехваченных заказов на приемке + абсолют перехваченных заказов</div>
+        <div class="chart-title">1. % и кол-во переданных заказов</div>
         <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
         <canvas id="c_company_34"></canvas>
       </div>
@@ -343,9 +335,25 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">Доп. показатели: % ошибочных перемещений + поток товаров на приемке (шт)</div>
+        <div class="chart-title">2. Доп. показатели: % ошибочных перемещений + поток товаров на приемке (шт)</div>
         <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
         <canvas id="c_company_5u"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">3. Экономия склада на переданных заказах</div>
+        <div class="chart-sub">Одна серия</div>
+        <canvas id="c_company_save"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">4. Сумма переданных заказов в деньгах</div>
+        <div class="chart-sub">Одна серия</div>
+        <canvas id="c_company_sum"></canvas>
       </div>
     </div>
 
@@ -353,15 +361,7 @@
       <div class="lane-title">Коледино</div>
 
       <div class="card chart-card">
-        <div class="chart-title">1. Скорость отгрузки</div>
-        <div class="chart-sub">Одна линия (легенда кликабельна: скрывает/показывает серию)</div>
-        <canvas id="c_koledino_12"></canvas>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card chart-card">
-        <div class="chart-title">2. % перехваченных заказов на приемке + абсолют перехваченных заказов</div>
+        <div class="chart-title">1. % и кол-во переданных заказов</div>
         <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
         <canvas id="c_koledino_34"></canvas>
       </div>
@@ -369,9 +369,25 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">Доп. показатели: % ошибочных перемещений + поток товаров на приемке (шт)</div>
+        <div class="chart-title">2. Доп. показатели: % ошибочных перемещений + поток товаров на приемке (шт)</div>
         <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
         <canvas id="c_koledino_5u"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">3. Экономия склада на переданных заказах</div>
+        <div class="chart-sub">Одна серия</div>
+        <canvas id="c_koledino_save"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">4. Сумма переданных заказов в деньгах</div>
+        <div class="chart-sub">Одна серия</div>
+        <canvas id="c_koledino_sum"></canvas>
       </div>
     </div>
 
@@ -379,15 +395,7 @@
       <div class="lane-title">Казань</div>
 
       <div class="card chart-card">
-        <div class="chart-title">1. Скорость отгрузки</div>
-        <div class="chart-sub">Одна линия (легенда кликабельна: скрывает/показывает серию)</div>
-        <canvas id="c_kazan_12"></canvas>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card chart-card">
-        <div class="chart-title">2. % перехваченных заказов на приемке + абсолют перехваченных заказов</div>
+        <div class="chart-title">1. % и кол-во переданных заказов</div>
         <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
         <canvas id="c_kazan_34"></canvas>
       </div>
@@ -395,9 +403,25 @@
       <div style="height:12px"></div>
 
       <div class="card chart-card">
-        <div class="chart-title">Доп. показатели: % ошибочных перемещений + поток товаров на приемке (шт)</div>
+        <div class="chart-title">2. Доп. показатели: % ошибочных перемещений + поток товаров на приемке (шт)</div>
         <div class="chart-sub">Две серии (легенда кликабельна: скрывает/показывает серию)</div>
         <canvas id="c_kazan_5u"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">3. Экономия склада на переданных заказах</div>
+        <div class="chart-sub">Одна серия</div>
+        <canvas id="c_kazan_save"></canvas>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card chart-card">
+        <div class="chart-title">4. Сумма переданных заказов в деньгах</div>
+        <div class="chart-sub">Одна серия</div>
+        <canvas id="c_kazan_sum"></canvas>
       </div>
     </div>
   </div>
@@ -435,8 +459,6 @@ function rand(min, max){ return Math.random()*(max-min)+min; }
 function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
 function fmtNum(n){ return n.toLocaleString("ru-RU"); }
 function fmtPct(x){ return (x*100).toFixed(1) + "%"; }
-function fmtHours(x){ return x.toFixed(1) + " ч"; }
-function fmt1(x){ return x.toFixed(1); }
 function fmtRub(x){
   const v = Math.round(x || 0);
   return v.toLocaleString("ru-RU") + " ₽";
@@ -543,7 +565,6 @@ function hashCode(str){
   }
   return h;
 }
-
 function whSeed01(wh){
   const x = Math.abs(hashCode(wh)) % 1000;
   return x / 999;
@@ -572,24 +593,19 @@ function generateMockRows(){
       const unitsPerOrder = rand(1.10, 1.55);
       const units = Math.round(orders * unitsPerOrder);
 
-      const interceptRateOrders = clamp(rand(0.018, 0.085) + (whFactor-1)*0.012, 0.01, 0.14);
-      const interceptAbs = Math.round(orders * interceptRateOrders);
-
-      const dayIndex = Math.round((d - start)/(24*3600*1000));
-      const trend = -0.015 * dayIndex;
-      const speedHours = clamp(rand(15.5, 26.5) + trend + (whFactor-1)*1.4, 10.5, 36);
-
-      const touches = clamp(rand(2.2, 4.1) + (whFactor-1)*0.28 + trend*0.3, 1.6, 5.4);
+      const transferRateOrders = clamp(rand(0.018, 0.085) + (whFactor-1)*0.012, 0.01, 0.14);
+      const transferredAbs = Math.round(orders * transferRateOrders);
 
       const sortErrRate = clamp(rand(0.002, 0.020) + (whFactor-1)*0.002 + (dow===1?0.001:0), 0.001, 0.03);
 
       const s = whSeed01(wh);
       const baseAov = 1400 + 2800 * s;
+      const dayIndex = Math.round((d - start)/(24*3600*1000));
       const aov = baseAov * (0.95 + 0.10*Math.sin((dayIndex+1)*0.6));
-      const interceptedAmountRub = interceptAbs * aov;
+      const transferredAmountRub = transferredAbs * aov;
 
       const savingsPerOrder = 18 + 62 * (1 - s);
-      const savingsRub = interceptAbs * savingsPerOrder;
+      const savingsRub = transferredAbs * savingsPerOrder;
 
       const date = dateKey(d);
       rows.push({
@@ -597,12 +613,10 @@ function generateMockRows(){
         warehouse: wh,
         orders,
         units,
-        intercept_rate_orders: interceptRateOrders, // used for unified "%"
-        intercept_abs: interceptAbs,
-        speed_hours: speedHours,
-        touches_per_unit: touches,
+        transfer_rate_orders: transferRateOrders,
+        transferred_abs: transferredAbs,
         sort_error_rate: sortErrRate,
-        intercepted_amount_rub: interceptedAmountRub,
+        transferred_amount_rub: transferredAmountRub,
         savings_rub: savingsRub
       });
     });
@@ -637,30 +651,23 @@ function agg(rows){
   };
 
   const orders = sum("orders");
-  const units  = sum("units");
-  const interceptAbs = sum("intercept_abs");
-  const interceptRateOrders = wavg("intercept_rate_orders","orders"); // unified %
-  const speedHours = wavg("speed_hours","orders");
-  const touchesPerUnit = wavg("touches_per_unit","units");
+  const transferredAbs = sum("transferred_abs");
+  const transferRateOrders = wavg("transfer_rate_orders","orders");
   const sortErrRate = wavg("sort_error_rate","units");
 
-  const interceptedAmountRub = sum("intercepted_amount_rub");
+  const transferredAmountRub = sum("transferred_amount_rub");
   const savingsRub = sum("savings_rub");
 
-  return {
-    orders, units, interceptAbs, interceptRateOrders, speedHours, touchesPerUnit, sortErrRate,
-    interceptedAmountRub, savingsRub
-  };
+  return { orders, transferredAbs, transferRateOrders, sortErrRate, transferredAmountRub, savingsRub };
 }
 
-/* ===== KPI deltas: positive 5%..30% ===== */
+/* ===== KPI deltas ===== */
 function ensureKpiDeltas(){
   const keys = [
-    "1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)",
-    "2. % перехваченных заказов на приемке",
-    "3. абсолютное кол-во перехваченных заказов в рамках складов / компании",
-    "4. Экономия склада при заказах с приемки",
-    "5. Сумма заказов в деньгах (перехвачено на приемке)"
+    "% переданных заказов",
+    "кол-во переданных заказов",
+    "Экономия склада на переданных заказах",
+    "Сумма заказов в деньгах"
   ];
   keys.forEach(k=>{
     if(state.kpiDeltaPct[k] == null) state.kpiDeltaPct[k] = rand(0.05, 0.30);
@@ -673,11 +680,10 @@ function buildKpis(){
   const cur = agg(state.filtered);
 
   const cards = [
-    { label:"1. Повышение скорости отгрузки заказа (получение заказа - отгрузка на ПВЗ)", value: fmtHours(cur.speedHours) },
-    { label:"2. % перехваченных заказов на приемке", value: fmtPct(cur.interceptRateOrders) },
-    { label:"3. абсолютное кол-во перехваченных заказов в рамках складов / компании", value: fmtNum(cur.interceptAbs) },
-    { label:"4. Экономия склада при заказах с приемки", value: fmtRub(cur.savingsRub) },
-    { label:"5. Сумма заказов в деньгах (перехвачено на приемке)", value: fmtRub(cur.interceptedAmountRub) }
+    { label:"% переданных заказов", value: fmtPct(cur.transferRateOrders) },
+    { label:"кол-во переданных заказов", value: fmtNum(cur.transferredAbs) },
+    { label:"Экономия склада на переданных заказах", value: fmtRub(cur.savingsRub) },
+    { label:"Сумма заказов в деньгах", value: fmtRub(cur.transferredAmountRub) }
   ];
 
   kpiGrid.innerHTML = "";
@@ -703,7 +709,20 @@ function destroyChart(id){
 }
 const COLORS = ["#2563eb","#7c3aed","#10b981","#f59e0b","#ef4444","#06b6d4"];
 
-function buildCombinedChartsForScope(scopeKey, canvas12, canvas34, canvas5u){
+function baseOptions(){
+  return {
+    responsive:true,
+    maintainAspectRatio:false,
+    interaction:{ mode:"index", intersect:false },
+    plugins:{
+      legend:{ display:true, labels:{ boxWidth:18, boxHeight:10, font:{ weight:"700" } } },
+      tooltip:{ enabled:true }
+    },
+    scales:{ x:{ ticks:{ maxRotation:45, minRotation:45 } } }
+  };
+}
+
+function buildScopeCharts(scopeKey, canvas34, canvas5u, canvasSave, canvasSum){
   let scopedRows = [];
   if(scopeKey === "company") scopedRows = state.filtered;
   else scopedRows = state.filtered.filter(r => r.warehouse === scopeKey);
@@ -714,89 +733,100 @@ function buildCombinedChartsForScope(scopeKey, canvas12, canvas34, canvas5u){
   const series = labels.map(day=>{
     const a = agg(byDay.get(day));
     return {
-      speed: a.speedHours,
-      interceptPct: a.interceptRateOrders,
-      intAbs: a.interceptAbs,
+      pct: a.transferRateOrders,
+      abs: a.transferredAbs,
       sortErr: a.sortErrRate,
-      units: a.units
+      units: byDay.get(day).reduce((s,x)=>s + (x.units||0), 0),
+      savings: a.savingsRub,
+      amount: a.transferredAmountRub
     };
   });
 
-  const baseOptions = {
-    responsive:true,
-    maintainAspectRatio:false,
-    interaction:{ mode:"index", intersect:false },
-    plugins:{
-      legend:{ display:true, labels:{ boxWidth:18, boxHeight:10, font:{ weight:"700" } } },
-      tooltip:{ enabled:true }
-    },
-    scales:{ x:{ ticks:{ maxRotation:45, minRotation:45 } } }
-  };
-
-  // Chart 1: speed only
-  destroyChart(canvas12);
-  state.charts[canvas12] = new Chart(document.getElementById(canvas12), {
-    type:"line",
-    data:{
-      labels,
-      datasets:[
-        { label:"1. Время, часы", data: series.map(s=>+s.speed.toFixed(2)), borderColor: COLORS[0], backgroundColor: COLORS[0], tension:0.25, pointRadius:2.2, yAxisID:"y" }
-      ]
-    },
-    options:{
-      ...baseOptions,
-      scales:{
-        x: baseOptions.scales.x,
-        y:{ position:"left", title:{ display:true, text:"Часы" } }
-      }
-    }
-  });
-
-  // Chart 2: unified % intercept + absolute
+  // 1) % + count transferred
   destroyChart(canvas34);
   state.charts[canvas34] = new Chart(document.getElementById(canvas34), {
     data:{
       labels,
       datasets:[
-        { type:"line", label:"2. % перехваченных заказов на приемке", data: series.map(s=>+s.interceptPct.toFixed(4)), borderColor: COLORS[2], backgroundColor: COLORS[2], tension:0.25, pointRadius:2.2, yAxisID:"y" },
-        { type:"bar",  label:"3. Перехвачено, заказов", data: series.map(s=>s.intAbs), borderColor: COLORS[0], backgroundColor:"rgba(37, 99, 235, 0.18)", yAxisID:"y1" }
+        { type:"line", label:"% переданных заказов", data: series.map(s=>+s.pct.toFixed(4)), borderColor: COLORS[2], backgroundColor: COLORS[2], tension:0.25, pointRadius:2.2, yAxisID:"y" },
+        { type:"bar",  label:"кол-во переданных заказов", data: series.map(s=>s.abs), borderColor: COLORS[0], backgroundColor:"rgba(37, 99, 235, 0.18)", yAxisID:"y1" }
       ]
     },
     options:{
-      ...baseOptions,
+      ...baseOptions(),
       scales:{
-        x: baseOptions.scales.x,
+        x: baseOptions().scales.x,
         y:{ position:"left", ticks:{ callback:(v)=> (v*100).toFixed(0)+"%" }, title:{ display:true, text:"%" } },
         y1:{ position:"right", grid:{ drawOnChartArea:false }, title:{ display:true, text:"Заказы" } }
       }
     }
   });
 
-  // Chart 3: unchanged
+  // 2) additional metrics
   destroyChart(canvas5u);
   state.charts[canvas5u] = new Chart(document.getElementById(canvas5u), {
     data:{
       labels,
       datasets:[
-        { type:"line", label:"% ошибок перемещений", data: series.map(s=>+s.sortErr.toFixed(4)), borderColor: COLORS[4], backgroundColor: COLORS[4], tension:0.25, pointRadius:2.2, yAxisID:"y" },
+        { type:"line", label:"% ошибочных перемещений", data: series.map(s=>+s.sortErr.toFixed(4)), borderColor: COLORS[4], backgroundColor: COLORS[4], tension:0.25, pointRadius:2.2, yAxisID:"y" },
         { type:"bar",  label:"Поток товаров на приемке, шт", data: series.map(s=>s.units), borderColor: COLORS[5], backgroundColor:"rgba(6, 182, 212, 0.20)", yAxisID:"y1" }
       ]
     },
     options:{
-      ...baseOptions,
+      ...baseOptions(),
       scales:{
-        x: baseOptions.scales.x,
+        x: baseOptions().scales.x,
         y:{ position:"left", ticks:{ callback:(v)=> (v*100).toFixed(0)+"%" }, title:{ display:true, text:"%" } },
         y1:{ position:"right", grid:{ drawOnChartArea:false }, title:{ display:true, text:"Шт" } }
+      }
+    }
+  });
+
+  // 3) savings
+  destroyChart(canvasSave);
+  state.charts[canvasSave] = new Chart(document.getElementById(canvasSave), {
+    type:"line",
+    data:{
+      labels,
+      datasets:[
+        { label:"Экономия, ₽", data: series.map(s=>Math.round(s.savings)), borderColor: COLORS[1], backgroundColor: COLORS[1], tension:0.25, pointRadius:2.2 }
+      ]
+    },
+    options:{
+      ...baseOptions(),
+      plugins:{ ...baseOptions().plugins, tooltip:{ callbacks:{ label:(ctx)=> `${ctx.dataset.label}: ${fmtRub(ctx.parsed.y)}` } } },
+      scales:{
+        x: baseOptions().scales.x,
+        y:{ ticks:{ callback:(v)=> (Math.round(v)).toLocaleString("ru-RU") } }
+      }
+    }
+  });
+
+  // 4) amount
+  destroyChart(canvasSum);
+  state.charts[canvasSum] = new Chart(document.getElementById(canvasSum), {
+    type:"line",
+    data:{
+      labels,
+      datasets:[
+        { label:"Сумма, ₽", data: series.map(s=>Math.round(s.amount)), borderColor: COLORS[0], backgroundColor: COLORS[0], tension:0.25, pointRadius:2.2 }
+      ]
+    },
+    options:{
+      ...baseOptions(),
+      plugins:{ ...baseOptions().plugins, tooltip:{ callbacks:{ label:(ctx)=> `${ctx.dataset.label}: ${fmtRub(ctx.parsed.y)}` } } },
+      scales:{
+        x: baseOptions().scales.x,
+        y:{ ticks:{ callback:(v)=> (Math.round(v)).toLocaleString("ru-RU") } }
       }
     }
   });
 }
 
 function buildCharts(){
-  buildCombinedChartsForScope("company", "c_company_12", "c_company_34", "c_company_5u");
-  buildCombinedChartsForScope("Коледино", "c_koledino_12", "c_koledino_34", "c_koledino_5u");
-  buildCombinedChartsForScope("Казань", "c_kazan_12", "c_kazan_34", "c_kazan_5u");
+  buildScopeCharts("company", "c_company_34", "c_company_5u", "c_company_save", "c_company_sum");
+  buildScopeCharts("Коледино", "c_koledino_34", "c_koledino_5u", "c_koledino_save", "c_koledino_sum");
+  buildScopeCharts("Казань", "c_kazan_34", "c_kazan_5u", "c_kazan_save", "c_kazan_sum");
 }
 
 /* ===== TABLE: aggregated per warehouse for selected period ===== */
@@ -811,26 +841,19 @@ function buildTable(){
   let rows = Array.from(g.entries()).map(([warehouse, items])=>{
     const a = agg(items);
     return {
-      "Склад": warehouse,
-      "Период": `${getDateRange().from} — ${getDateRange().to}`,
-      "Кол-во товаров на приемке - шт.": a.units,
-      "Кол-во перехваченных заказов на приемке - шт.": a.interceptAbs,
-      "Кол-во перехваченных заказов на приемке - %": a.interceptRateOrders,
-      "Ср. скорость отгрузки заказа": a.speedHours,
-      "Ср. кол-во касаний на товар": a.touchesPerUnit,
-      "% ошибочных перемещений в тару сортировки": a.sortErrRate
+      "__warehouse": warehouse,
+      "кол-во переданных заказов": a.transferredAbs,
+      "% переданных заказов": a.transferRateOrders,
+      "Экономия склада на переданных заказах": a.savingsRub,
+      "Сумма переданных заказов в деньгах": a.transferredAmountRub
     };
   });
 
   const cols = [
-    "Склад",
-    "Период",
-    "Кол-во товаров на приемке - шт.",
-    "Кол-во перехваченных заказов на приемке - шт.",
-    "Кол-во перехваченных заказов на приемке - %",
-    "Ср. скорость отгрузки заказа",
-    "Ср. кол-во касаний на товар",
-    "% ошибочных перемещений в тару сортировки"
+    "кол-во переданных заказов",
+    "% переданных заказов",
+    "Экономия склада на переданных заказах",
+    "Сумма переданных заказов в деньгах"
   ];
 
   if(state.sort.key){
@@ -842,7 +865,7 @@ function buildTable(){
       return String(av).localeCompare(String(bv))*dir;
     });
   } else {
-    rows.sort((a,b)=> a["Склад"].localeCompare(b["Склад"]));
+    rows.sort((a,b)=> a.__warehouse.localeCompare(b.__warehouse));
   }
 
   thead.innerHTML = "<tr>" + cols.map(c=>`<th data-col="${c}">${c}</th>`).join("") + "</tr>";
@@ -850,41 +873,33 @@ function buildTable(){
   tbody.innerHTML = rows.map(r=>{
     return "<tr>" + cols.map(c=>{
       const v = r[c];
-      const isNum = typeof v === "number";
       let out = v;
 
-      if(c.endsWith("- %") || c.startsWith("% ")) out = fmtPct(v);
-      else if(c.startsWith("Ср. скорость")) out = fmtHours(v);
-      else if(c.startsWith("Ср. кол-во")) out = fmt1(v);
-      else if(isNum) out = fmtNum(Math.round(v));
+      if(c.startsWith("% ")) out = fmtPct(v);
+      else if(c.includes("Экономия") || c.includes("Сумма")) out = fmtRub(v);
+      else out = fmtNum(Math.round(v));
 
-      return `<td class="${isNum ? "right" : ""}">${out}</td>`;
+      return `<td class="right">${out}</td>`;
     }).join("") + "</tr>";
   }).join("");
 
   const total = agg(state.filtered);
   const totalsRow = {
-    "Склад":"Итого",
-    "Период":`${getDateRange().from} — ${getDateRange().to}`,
-    "Кол-во товаров на приемке - шт.": total.units,
-    "Кол-во перехваченных заказов на приемке - шт.": total.interceptAbs,
-    "Кол-во перехваченных заказов на приемке - %": total.interceptRateOrders,
-    "Ср. скорость отгрузки заказа": total.speedHours,
-    "Ср. кол-во касаний на товар": total.touchesPerUnit,
-    "% ошибочных перемещений в тару сортировки": total.sortErrRate
+    "кол-во переданных заказов": total.transferredAbs,
+    "% переданных заказов": total.transferRateOrders,
+    "Экономия склада на переданных заказах": total.savingsRub,
+    "Сумма переданных заказов в деньгах": total.transferredAmountRub
   };
 
   tfoot.innerHTML = "<tr>" + cols.map(c=>{
     const v = totalsRow[c];
-    const isNum = typeof v === "number";
     let out = v;
 
-    if(c.endsWith("- %") || c.startsWith("% ")) out = fmtPct(v);
-    else if(c.startsWith("Ср. скорость")) out = fmtHours(v);
-    else if(c.startsWith("Ср. кол-во")) out = fmt1(v);
-    else if(isNum) out = fmtNum(Math.round(v));
+    if(c.startsWith("% ")) out = fmtPct(v);
+    else if(c.includes("Экономия") || c.includes("Сумма")) out = fmtRub(v);
+    else out = fmtNum(Math.round(v));
 
-    return `<td class="${isNum ? "right" : ""}">${out}</td>`;
+    return `<td class="right">${out}</td>`;
   }).join("") + "</tr>";
 
   thead.querySelectorAll("th").forEach(th=>{
@@ -960,4 +975,3 @@ function refreshAll(regen=false){
 </script>
 </body>
 </html>
-
